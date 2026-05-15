@@ -1,1050 +1,1517 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Life Hours Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #f8f9fa;
-  --surface: #ffffff;
-  --border: #dadce0;
-  --text: #202124;
-  --sub: #5f6368;
-  
-  --green-empty: #d4f7e1;
-  --green-hover: #bbf0c8;
-  --green-dark: #1e8e3e;
-  
-  --red: #ea4335;
-  --red-light: #fce8e6;
-  --blue: #8ab4f8;
-  --purple: #d7aefb;
-  --yellow: #fde293;
-  --primary: #1a73e8;
-}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Life Hours Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f8f9fa;
+            --surface: #ffffff;
+            --border: #dadce0;
+            --text: #202124;
+            --sub: #5f6368;
 
-* { box-sizing: border-box; font-family: "Google Sans", sans-serif; }
+            --green-empty: #d4f7e1;
+            --green-hover: #bbf0c8;
+            --green-dark: #1e8e3e;
 
-body { margin: 0; background: var(--bg); color: var(--text); height: 100vh; display: flex; overflow: hidden; }
+            --red: #ea4335;
+            --red-light: #fce8e6;
+            --blue: #8ab4f8;
+            --purple: #d7aefb;
+            --yellow: #fde293;
+            --primary: #1a73e8;
+        }
 
-.app { display: flex; width: 100%; height: 100vh; overflow: hidden; }
+        * {
+            box-sizing: border-box;
+            font-family: "Google Sans", sans-serif;
+        }
 
-/* SIDEBAR */
-.sidebar {
-  width: 320px; background: white; border-right: 1px solid var(--border);
-  display: flex; flex-direction: column; padding: 24px; z-index: 20; overflow-y: auto;
-}
-.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
 
-.logo { font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
-.subtitle { color: var(--sub); font-size: 13px; margin-bottom: 24px; }
+        .app {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-.savings-card {
-  background: linear-gradient(135deg, #1e8e3e, #34a853); color: white;
-  border-radius: 20px; padding: 24px; margin-bottom: 24px;
-  box-shadow: 0 4px 12px rgba(52, 168, 83, 0.2); flex-shrink: 0;
-  cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
-  position: relative;
-}
-.savings-card:hover { transform: scale(1.02); box-shadow: 0 6px 16px rgba(52, 168, 83, 0.3); }
-.savings-value { font-size: 36px; font-weight: 700; margin: 4px 0; font-variant-numeric: tabular-nums; }
-.progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.3); border-radius: 4px; margin-top: 12px; overflow: hidden; }
-.progress-bar-fill { height: 100%; background: white; border-radius: 4px; transition: width 0.4s ease; }
+        /* SIDEBAR */
+        .sidebar {
+            width: 320px;
+            background: white;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            z-index: 20;
+            overflow-y: auto;
+        }
 
-@keyframes pulse { 0% {opacity:1;} 50% {opacity:0.4;} 100% {opacity:1;} }
-.live-indicator { display: none; color: #ffcccb; font-weight: 700; animation: pulse 1.5s infinite; font-size: 11px; letter-spacing: 1px; }
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-.stat-box {
-    background: #f1f3f4; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px;
-    display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
-}
-.stat-box .title { font-size: 12px; color: var(--sub); font-weight: 600; }
-.stat-box .val { font-size: 16px; font-weight: 700; color: var(--text); }
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
 
-/* LEGEND */
-.legend-card {
-    margin-top: 16px; padding: 16px; background: #f8f9fa; border-radius: 12px; border: 1px solid var(--border); flex-shrink: 0;
-}
-.legend-card h4 { margin: 0 0 12px 0; font-size: 11px; color: var(--sub); text-transform: uppercase; letter-spacing: 0.5px; }
-.legend-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-.legend-item:last-child { margin-bottom: 0; }
-.legend-color { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
-.legend-text { font-size: 12px; font-weight: 500; color: var(--text); }
+        .subtitle {
+            color: var(--sub);
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
 
-.helper-text { margin-top: 24px; padding: 16px; border-radius: 12px; background: #e8f0fe; font-size: 13px; color: var(--primary); line-height: 1.5; text-align: center; flex-shrink: 0; }
+        .savings-card {
+            background: linear-gradient(135deg, #1e8e3e, #34a853);
+            color: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(52, 168, 83, 0.2);
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
 
-/* CALENDAR MAIN */
-.topbar {
-  height: 64px; background: white; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0;
-}
-.calendar-container { flex: 1; overflow: auto; background: white; }
-.calendar { display: grid; min-width: 800px; grid-template-columns: 80px repeat(auto-fit, minmax(140px, 1fr)); }
+        .savings-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(52, 168, 83, 0.3);
+        }
 
-.header {
-  position: sticky; top: 0; background: white; z-index: 15;
-  padding: 16px; border-bottom: 1px solid var(--border);
-  text-align: center; font-weight: 600; font-size: 14px;
-}
+        .savings-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin: 4px 0;
+            font-variant-numeric: tabular-nums;
+        }
 
-/* CALENDAR GRID */
-.time-col { background: white; border-right: 1px solid var(--border); position: relative; }
-.time-label { 
-    height: 60px; padding: 8px 12px; text-align: right; 
-    font-size: 11px; color: var(--sub); font-weight: 500; 
-    border-bottom: 1px solid #f1f3f4; box-sizing: border-box;
-}
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
 
-.day-col {
-  border-right: 1px solid var(--border);
-  position: relative; background: var(--green-empty);
-}
-.past-day { background: #f8f9fa !important; }
+        .progress-bar-fill {
+            height: 100%;
+            background: white;
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
 
-.slot-bg {
-    height: 60px; border-bottom: 1px solid rgba(0,0,0,0.04); box-sizing: border-box; transition: background 0.1s; cursor: pointer;
-}
-.slot-bg:hover { background: rgba(0,0,0,0.02); }
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
 
-.lunch-block {
-  position: absolute; left: 0; right: 0; z-index: 5;
-  background-color: #f8f9fa;
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px);
-  pointer-events: none; display: flex; align-items: center; justify-content: center;
-  color: #bdc1c6; font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;
-  border-top: 1px solid rgba(0,0,0,0.05); border-bottom: 1px solid rgba(0,0,0,0.05);
-}
+            50% {
+                opacity: 0.4;
+            }
 
-.highlight-valid { background: rgba(30, 142, 62, 0.25); box-shadow: inset 0 0 0 2px var(--green-dark); z-index: 10; pointer-events: none; }
+            100% {
+                opacity: 1;
+            }
+        }
 
-/* EVENTS */
-@keyframes popIn { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .live-indicator {
+            display: none;
+            color: #ffcccb;
+            font-weight: 700;
+            animation: pulse 1.5s infinite;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
 
-.event {
-  position: absolute; left: 4px; right: 4px; border-radius: 6px; padding: 6px 8px; color: #1f1f1f;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15); animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  display: flex; flex-direction: column; overflow: hidden; z-index: 12; border: 1px solid rgba(0,0,0,0.05);
-  cursor: grab; transition: transform 0.1s;
-}
-.event:active { cursor: grabbing; }
-.event:hover { transform: scale(1.02); z-index: 14; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-.event.dragging { opacity: 0.4; transform: scale(0.98); }
-.event b { font-weight: 600; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; line-height: 1.2; }
-.event span { font-size: 11px; opacity: 0.85; line-height: 1.2; }
+        .stat-box {
+            background: #f1f3f4;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
 
-.purchase { background: #f28b82; }
-.investing { background: var(--blue); }
-.goal { background: var(--purple); }
-.food { background: var(--yellow); }
+        .stat-box .title {
+            font-size: 12px;
+            color: var(--sub);
+            font-weight: 600;
+        }
 
-.floating-cursor {
-    position: fixed; z-index: 9999; pointer-events: none;
-    opacity: 0.95; width: auto; min-width: 120px; box-shadow: 0 12px 32px rgba(0,0,0,0.3);
-    animation: none; height: auto !important; padding: 10px 12px; border-radius: 8px;
-}
+        .stat-box .val {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+        }
 
-/* FAB & MODALS */
-.fab {
-  position: fixed; bottom: 32px; right: 32px; width: 64px; height: 64px; border-radius: 20px;
-  background: var(--primary); color: white; display: flex; align-items: center; justify-content: center;
-  font-size: 32px; font-weight: 300; cursor: pointer; box-shadow: 0 4px 16px rgba(26, 115, 232, 0.4); border: none; transition: 0.2s; z-index: 90;
-}
-.fab:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(26, 115, 232, 0.5); }
+        /* LEGEND */
+        .legend-card {
+            margin-top: 16px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
 
-.overlay {
-  position: fixed; inset: 0; background: rgba(32,33,36,0.6); backdrop-filter: blur(2px);
-  display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 1; transition: 0.2s;
-}
-.modal { background: white; width: 420px; padding: 32px; border-radius: 24px; box-shadow: 0 24px 48px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
-.hidden { display: none !important; }
-.form-group { margin-bottom: 16px; }
-.form-group label { display: block; font-size: 12px; color: var(--sub); margin-bottom: 6px; font-weight: 500; }
-input, select { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); font-size: 14px; background: #f8f9fa; }
-input:focus, select:focus { outline: none; border-color: var(--primary); background: white; }
-.day-pill { padding: 8px 16px; border-radius: 20px; background: white; border: 1px solid var(--border); cursor: pointer; font-size: 13px; font-weight: 500; display: inline-block; transition: 0.2s; }
-.day-pill:hover { background: #f1f3f4; }
-.day-pill.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .legend-card h4 {
+            margin: 0 0 12px 0;
+            font-size: 11px;
+            color: var(--sub);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-.btn-primary { width:100%; padding:14px; background:var(--primary); color:white; border:none; border-radius:12px; cursor:pointer; font-weight: 600; transition: 0.2s; }
-.btn-primary:hover { background: #1557b0; }
-.btn-danger { width:100%; padding:14px; background:white; color:var(--red); border:1px solid var(--red); border-radius:12px; cursor:pointer; font-weight: 600; transition: 0.2s; }
-.btn-danger:hover { background: var(--red-light); }
-.btn-text { width:100%; margin-top:8px; background:none; border:none; color:var(--sub); cursor:pointer; font-weight: 500; padding:10px; }
-.btn-text:hover { color: var(--text); }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
 
-.flex-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-</style>
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .legend-text {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .helper-text {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 12px;
+            background: #e8f0fe;
+            font-size: 13px;
+            color: var(--primary);
+            line-height: 1.5;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* CALENDAR MAIN */
+        .topbar {
+            height: 64px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            flex-shrink: 0;
+        }
+
+        .calendar-container {
+            flex: 1;
+            overflow: auto;
+            background: white;
+        }
+
+        .calendar {
+            display: grid;
+            min-width: 800px;
+            grid-template-columns: 80px repeat(auto-fit, minmax(140px, 1fr));
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 15;
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* CALENDAR GRID */
+        .time-col {
+            background: white;
+            border-right: 1px solid var(--border);
+            position: relative;
+        }
+
+        .time-label {
+            height: 60px;
+            padding: 8px 12px;
+            text-align: right;
+            font-size: 11px;
+            color: var(--sub);
+            font-weight: 500;
+            border-bottom: 1px solid #f1f3f4;
+            box-sizing: border-box;
+        }
+
+        .day-col {
+            border-right: 1px solid var(--border);
+            position: relative;
+            background: var(--green-empty);
+        }
+
+        .past-day {
+            background: #f8f9fa !important;
+        }
+
+        .slot-bg {
+            height: 60px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            box-sizing: border-box;
+            transition: background 0.1s;
+            cursor: pointer;
+        }
+
+        .slot-bg:hover {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .lunch-block {
+            position: absolute;
+            left: 0;
+            right: 0;
+            z-index: 5;
+            background-color: #f8f9fa;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.03) 10px, rgba(0, 0, 0, 0.03) 20px);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #bdc1c6;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .highlight-valid {
+            background: rgba(30, 142, 62, 0.25);
+            box-shadow: inset 0 0 0 2px var(--green-dark);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* EVENTS */
+        @keyframes popIn {
+            0% {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .event {
+            position: absolute;
+            left: 4px;
+            right: 4px;
+            border-radius: 6px;
+            padding: 6px 8px;
+            color: #1f1f1f;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 12;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            cursor: grab;
+            transition: transform 0.1s;
+            padding-right: 34px;
+            /* room for edit button */
+        }
+
+        .event-content {
+            pointer-events: none;
+        }
+
+        .event-edit-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            border: none;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(4px);
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.15s;
+            z-index: 20;
+        }
+
+        .event-edit-btn:hover {
+            background: white;
+            transform: scale(1.08);
+        }
+
+        .event:active {
+            cursor: grabbing;
+        }
+
+        .event:hover {
+            transform: scale(1.02);
+            z-index: 14;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .event.dragging {
+            opacity: 0.4;
+            transform: scale(0.98);
+        }
+
+        .event b {
+            font-weight: 600;
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+
+        .event span {
+            font-size: 11px;
+            opacity: 0.85;
+            line-height: 1.2;
+        }
+
+        .purchase {
+            background: #f28b82;
+        }
+
+        .investing {
+            background: var(--blue);
+        }
+
+        .goal {
+            background: var(--purple);
+        }
+
+        .food {
+            background: var(--yellow);
+        }
+
+        .floating-cursor {
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0.95;
+            width: auto;
+            min-width: 120px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+            animation: none;
+            height: auto !important;
+            padding: 10px 12px;
+            border-radius: 8px;
+        }
+
+        /* FAB & MODALS */
+        .fab {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 64px;
+            height: 64px;
+            border-radius: 20px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 300;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(26, 115, 232, 0.4);
+            border: none;
+            transition: 0.2s;
+            z-index: 90;
+        }
+
+        .fab:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(26, 115, 232, 0.5);
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(32, 33, 36, 0.6);
+            backdrop-filter: blur(2px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 1;
+            transition: 0.2s;
+        }
+
+        .modal {
+            background: white;
+            width: 420px;
+            padding: 32px;
+            border-radius: 24px;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--sub);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+            background: #f8f9fa;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .day-pill {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: white;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-block;
+            transition: 0.2s;
+        }
+
+        .day-pill:hover {
+            background: #f1f3f4;
+        }
+
+        .day-pill.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #1557b0;
+        }
+
+        .btn-danger {
+            width: 100%;
+            padding: 14px;
+            background: white;
+            color: var(--red);
+            border: 1px solid var(--red);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn-danger:hover {
+            background: var(--red-light);
+        }
+
+        .btn-text {
+            width: 100%;
+            margin-top: 8px;
+            background: none;
+            border: none;
+            color: var(--sub);
+            cursor: pointer;
+            font-weight: 500;
+            padding: 10px;
+        }
+
+        .btn-text:hover {
+            color: var(--text);
+        }
+
+        .flex-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="overlay hidden" id="setupModal">
-  <div class="modal">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h2 style="margin:0; font-size: 20px;">Calendar Settings</h2>
-        <button class="day-pill" style="padding: 6px 12px; font-size: 12px;" onclick="document.getElementById('setupModal').classList.add('hidden')">✕</button>
-    </div>
-    <div class="form-group"><label>Start Date (Project Beginning)</label><input type="date" id="startDate"></div>
-    <div class="flex-grid">
-        <div class="form-group" style="margin-bottom:0"><label>Work Starts</label><input type="time" id="startTime"></div>
-        <div class="form-group" style="margin-bottom:0"><label>Work Ends</label><input type="time" id="endTime"></div>
-    </div>
-    <div style="background: #f8f9fa; padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--border);">
-        <label style="color: var(--text); margin-bottom: 12px; display: block;">Lunch Break (Unpaid)</label>
-        <div class="flex-grid" style="margin-bottom:0">
-            <div class="form-group" style="margin-bottom:0"><label>Start</label><input type="time" id="lunchStart"></div>
-            <div class="form-group" style="margin-bottom:0"><label>End</label><input type="time" id="lunchEnd"></div>
+    <div class="overlay hidden" id="setupModal">
+        <div class="modal">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h2 style="margin:0; font-size: 20px;">Calendar Settings</h2>
+                <button class="day-pill" style="padding: 6px 12px; font-size: 12px;"
+                    onclick="document.getElementById('setupModal').classList.add('hidden')">✕</button>
+            </div>
+            <div class="form-group"><label>Start Date (Project Beginning)</label><input type="date" id="startDate">
+            </div>
+            <div class="flex-grid">
+                <div class="form-group" style="margin-bottom:0"><label>Work Starts</label><input type="time"
+                        id="startTime"></div>
+                <div class="form-group" style="margin-bottom:0"><label>Work Ends</label><input type="time" id="endTime">
+                </div>
+            </div>
+            <div
+                style="background: #f8f9fa; padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--border);">
+                <label style="color: var(--text); margin-bottom: 12px; display: block;">Lunch Break (Unpaid)</label>
+                <div class="flex-grid" style="margin-bottom:0">
+                    <div class="form-group" style="margin-bottom:0"><label>Start</label><input type="time"
+                            id="lunchStart"></div>
+                    <div class="form-group" style="margin-bottom:0"><label>End</label><input type="time" id="lunchEnd">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group"><label>Hourly Pay (Net)</label><input type="number" id="hourlyRate"></div>
+            <label
+                style="font-size: 12px; color: var(--sub); font-weight: 500; margin-bottom: 6px; display: block;">Active
+                Working Days</label>
+            <div id="daysContainer" style="margin-bottom: 24px;"></div>
+
+            <button class="btn-primary" onclick="saveSettings()">Save & Apply</button>
+
+            <div style="margin-top: 24px; border-top: 1px solid var(--border); padding-top: 16px;">
+                <label
+                    style="font-size: 12px; color: var(--sub); font-weight: 500; margin-bottom: 8px; display: block;">Backup
+                    Data (.lifehours)</label>
+                <div class="flex-grid" style="margin-bottom: 16px;">
+                    <button class="day-pill" style="text-align:center;" onclick="exportData()">📤 Export
+                        Profile</button>
+                    <button class="day-pill" style="text-align:center;"
+                        onclick="document.getElementById('importFile').click()">📥 Import File</button>
+                </div>
+                <input type="file" id="importFile" accept=".lifehours" style="display:none;"
+                    onchange="importData(event)">
+                <button class="btn-danger" style="padding: 10px;" onclick="wipeData()">Wipe All Data</button>
+            </div>
         </div>
     </div>
-    <div class="form-group"><label>Hourly Pay (Net)</label><input type="number" id="hourlyRate"></div>
-    <label style="font-size: 12px; color: var(--sub); font-weight: 500; margin-bottom: 6px; display: block;">Active Working Days</label>
-    <div id="daysContainer" style="margin-bottom: 24px;"></div>
-    
-    <button class="btn-primary" onclick="saveSettings()">Save & Apply</button>
 
-    <div style="margin-top: 24px; border-top: 1px solid var(--border); padding-top: 16px;">
-        <label style="font-size: 12px; color: var(--sub); font-weight: 500; margin-bottom: 8px; display: block;">Backup Data (.lifehours)</label>
-        <div class="flex-grid" style="margin-bottom: 16px;">
-            <button class="day-pill" style="text-align:center;" onclick="exportData()">📤 Export Profile</button>
-            <button class="day-pill" style="text-align:center;" onclick="document.getElementById('importFile').click()">📥 Import File</button>
+    <div class="overlay hidden" id="itemModal">
+        <div class="modal">
+            <h2 style="margin-top:0; font-size: 20px;" id="modalTitle">Allocate Hours</h2>
+            <div class="form-group"><label>What are you saving for?</label><input id="itemTitle"
+                    placeholder="e.g. Flight to Tokyo"></div>
+            <div class="form-group"><label>Total Cost ($)</label><input type="number" id="itemCost" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <select id="itemCategory">
+                    <option value="purchase">Purchase</option>
+                    <option value="investing">Investing</option>
+                    <option value="goal">Personal Goal</option>
+                    <option value="food">Food & Dining</option>
+                </select>
+            </div>
+            <button class="btn-primary" onclick="submitItem()" id="modalBtn">Place on Calendar</button>
+            <button class="btn-danger hidden" id="modalDeleteBtn" style="margin-top: 12px;"
+                onclick="deleteItem()">Delete Allocation</button>
+            <button class="btn-text" onclick="closeItemModal()">Cancel</button>
         </div>
-        <input type="file" id="importFile" accept=".lifehours" style="display:none;" onchange="importData(event)">
-        <button class="btn-danger" style="padding: 10px;" onclick="wipeData()">Wipe All Data</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay hidden" id="itemModal">
-    <div class="modal">
-      <h2 style="margin-top:0; font-size: 20px;" id="modalTitle">Allocate Hours</h2>
-      <div class="form-group"><label>What are you saving for?</label><input id="itemTitle" placeholder="e.g. Flight to Tokyo"></div>
-      <div class="form-group"><label>Total Cost ($)</label><input type="number" id="itemCost" placeholder="0.00"></div>
-      <div class="form-group">
-          <label>Category</label>
-          <select id="itemCategory">
-              <option value="purchase">Purchase</option>
-              <option value="investing">Investing</option>
-              <option value="goal">Personal Goal</option>
-              <option value="food">Food & Dining</option>
-          </select>
-      </div>
-      <button class="btn-primary" onclick="submitItem()" id="modalBtn">Place on Calendar</button>
-      <button class="btn-danger hidden" id="modalDeleteBtn" style="margin-top: 12px;" onclick="deleteItem()">Delete Allocation</button>
-      <button class="btn-text" onclick="closeItemModal()">Cancel</button>
-    </div>
-</div>
-
-<div class="app">
-  <div class="sidebar">
-    <div class="logo">Life Hours</div>
-    <div class="subtitle">Time is your currency.</div>
-    
-    <div class="savings-card" onclick="toggleRealTime()" title="Click to toggle Live ticking mode!">
-      <div style="font-size: 12px; opacity: 0.9; font-weight: 500; letter-spacing: 0.5px; display:flex; justify-content:space-between;">
-          <span>GLOBAL SAVINGS</span>
-          <span id="liveIndicator" class="live-indicator">● LIVE</span>
-      </div>
-      <div class="savings-value" id="savings">$0</div>
-      <div class="progress-bar-bg"><div class="progress-bar-fill" id="savings-progress"></div></div>
-      <div style="font-size: 11px; opacity: 0.9; margin-top: 8px;" id="savings-percent">100% retained</div>
     </div>
 
-    <h3 style="font-size: 12px; color: var(--sub); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 12px 0;">Weekly Breakdown</h3>
-    <div class="stat-box"><div class="title">Capacity</div><div class="val" id="stat-total">$0</div></div>
-    <div class="stat-box"><div class="title">Allocated</div><div class="val" id="stat-allocated">$0</div></div>
-    <div class="stat-box"><div class="title">Work Hours</div><div class="val" id="stat-hours">0h</div></div>
+    <div class="app">
+        <div class="sidebar">
+            <div class="logo">Life Hours</div>
+            <div class="subtitle">Time is your currency.</div>
 
-    <div class="legend-card">
-      <h4>Color Legend</h4>
-      <div class="legend-item">
-        <div class="legend-color" style="background:var(--green-empty); border:1px solid var(--green-dark);"></div>
-        <div class="legend-text">🟩 Unallocated (Future Profit)</div>
-      </div>
-      <div class="legend-item">
-        <div class="legend-color" style="background:var(--primary);"></div>
-        <div class="legend-text">🟦 Allocated Item/Goal</div>
-      </div>
-      <div class="legend-item">
-        <div class="legend-color" style="background:#e8eaed; background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 6px);"></div>
-        <div class="legend-text" style="color: var(--sub);">⬜ Unpaid / Lunch / Past Days</div>
-      </div>
+            <div class="savings-card" onclick="toggleRealTime()" title="Click to toggle Live ticking mode!">
+                <div
+                    style="font-size: 12px; opacity: 0.9; font-weight: 500; letter-spacing: 0.5px; display:flex; justify-content:space-between;">
+                    <span>GLOBAL SAVINGS</span>
+                    <span id="liveIndicator" class="live-indicator">● LIVE</span>
+                </div>
+                <div class="savings-value" id="savings">$0</div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="savings-progress"></div>
+                </div>
+                <div style="font-size: 11px; opacity: 0.9; margin-top: 8px;" id="savings-percent">100% retained</div>
+            </div>
+
+            <h3
+                style="font-size: 12px; color: var(--sub); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 12px 0;">
+                Weekly Breakdown</h3>
+            <div class="stat-box">
+                <div class="title">Capacity</div>
+                <div class="val" id="stat-total">$0</div>
+            </div>
+            <div class="stat-box">
+                <div class="title">Allocated</div>
+                <div class="val" id="stat-allocated">$0</div>
+            </div>
+            <div class="stat-box">
+                <div class="title">Work Hours</div>
+                <div class="val" id="stat-hours">0h</div>
+            </div>
+
+            <div class="legend-card">
+                <h4>Color Legend</h4>
+                <div class="legend-item">
+                    <div class="legend-color"
+                        style="background:var(--green-empty); border:1px solid var(--green-dark);"></div>
+                    <div class="legend-text">🟩 Unallocated (Future Profit)</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background:var(--primary);"></div>
+                    <div class="legend-text">🟦 Allocated Item/Goal</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color"
+                        style="background:#e8eaed; background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 6px);">
+                    </div>
+                    <div class="legend-text" style="color: var(--sub);">⬜ Unpaid / Lunch / Past Days</div>
+                </div>
+            </div>
+
+            <div class="helper-text" id="helper-text">
+                Click a slot or the <b>+</b> button to allocate your life hours.
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="topbar">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button class="day-pill" onclick="changeWeek(-1)" style="padding: 8px 12px;">←</button>
+                    <div id="weekLabel" style="font-weight:600; margin: 0 8px; font-size: 15px;">Week</div>
+                    <button class="day-pill" onclick="changeWeek(1)" style="padding: 8px 12px;">→</button>
+                </div>
+                <button class="day-pill" onclick="document.getElementById('setupModal').classList.remove('hidden')">⚙️
+                    Settings</button>
+            </div>
+            <div class="calendar-container">
+                <div class="calendar" id="calendar"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="helper-text" id="helper-text">
-      Click a slot or the <b>+</b> button to allocate your life hours.
-    </div>
-  </div>
+    <button class="fab" onclick="openItemModal()">+</button>
 
-  <div class="main">
-    <div class="topbar">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <button class="day-pill" onclick="changeWeek(-1)" style="padding: 8px 12px;">←</button>
-        <div id="weekLabel" style="font-weight:600; margin: 0 8px; font-size: 15px;">Week</div>
-        <button class="day-pill" onclick="changeWeek(1)" style="padding: 8px 12px;">→</button>
-      </div>
-      <button class="day-pill" onclick="document.getElementById('setupModal').classList.remove('hidden')">⚙️ Settings</button>
-    </div>
-    <div class="calendar-container"><div class="calendar" id="calendar"></div></div>
-  </div>
-</div>
+    <script>
+        const PX_PER_MIN = 2;
 
-<button class="fab" onclick="openItemModal()">+</button>
-
-<script>
-const PX_PER_MIN = 2;
-
-let settings = {
-    startDate: new Date(),
-    startTime: "07:30",
-    endTime: "16:00",
-    lunchStart: "12:00",
-    lunchEnd: "12:30",
-    hourlyRate: 25,
-    enabledDays: [1,2,3,4,5]
-};
-
-let currentWeek = 0;
-let events = []; 
-let placementItem = null;
-let pendingPlacement = null; 
-let editingEventId = null;   
-let floatingEl = null;
-let eventIdCounter = 0;
-let tickInterval = null;
-let isRealTime = false;
-let draggedEventId = null;
-
-const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-function saveData() {
-    localStorage.setItem('lifeHoursSettings', JSON.stringify(settings));
-    localStorage.setItem('lifeHoursEvents', JSON.stringify(events));
-}
-
-function loadData() {
-    const savedSettings = localStorage.getItem('lifeHoursSettings');
-    const savedEvents = localStorage.getItem('lifeHoursEvents');
-    
-    if (savedSettings) {
-        settings = JSON.parse(savedSettings);
-        settings.startDate = new Date(settings.startDate);
-    }
-    
-    if (savedEvents) {
-        events = JSON.parse(savedEvents);
-        eventIdCounter = events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 0;
-    }
-}
-
-function exportData() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ settings, events }));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `profile_${new Date().toISOString().slice(0,10)}.lifehours`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-}
-
-function importData(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const parsed = JSON.parse(e.target.result);
-            if (parsed.settings && parsed.events) {
-                settings = parsed.settings;
-                settings.startDate = new Date(settings.startDate);
-                events = parsed.events;
-                eventIdCounter = events.length > 0 ? Math.max(...events.map(ev => ev.id)) + 1 : 0;
-                
-                saveData();
-                init();
-                document.getElementById('setupModal').classList.add('hidden');
-                alert("Data configuration imported successfully!");
-            } else {
-                alert("Error: File matching standard criteria was not found.");
-            }
-        } catch(err) {
-            alert("Failed to parse file structural hierarchy.");
-        }
-    };
-    reader.readAsText(file);
-    event.target.value = ''; 
-}
-
-function wipeData() {
-    if(confirm("Are you sure you want to delete all your settings and placed allocations? This cannot be undone.")) {
-        localStorage.clear();
-        location.reload();
-    }
-}
-
-function init() {
-    loadData();
-    
-    document.getElementById('startDate').valueAsDate = settings.startDate;
-    document.getElementById('startTime').value = settings.startTime;
-    document.getElementById('endTime').value = settings.endTime;
-    document.getElementById('lunchStart').value = settings.lunchStart;
-    document.getElementById('lunchEnd').value = settings.lunchEnd;
-    document.getElementById('hourlyRate').value = settings.hourlyRate;
-
-    const container = document.getElementById('daysContainer');
-    container.innerHTML = '';
-    dayNames.forEach((name, i) => {
-        const pill = document.createElement('div');
-        pill.className = `day-pill ${settings.enabledDays.includes(i) ? 'active' : ''}`;
-        pill.innerText = name;
-        pill.style.margin = "0 4px 4px 0";
-        pill.onclick = () => {
-            if (settings.enabledDays.includes(i)) {
-                settings.enabledDays = settings.enabledDays.filter(d => d !== i);
-                pill.classList.remove('active');
-            } else {
-                settings.enabledDays.push(i);
-                pill.classList.add('active');
-            }
+        let settings = {
+            startDate: new Date(),
+            startTime: "07:30",
+            endTime: "16:00",
+            lunchStart: "12:00",
+            lunchEnd: "12:30",
+            hourlyRate: 25,
+            enabledDays: [1, 2, 3, 4, 5]
         };
-        container.appendChild(pill);
-    });
-    
-    document.removeEventListener('mousemove', window.mouseMoveHandler);
-    window.mouseMoveHandler = e => {
-        if (floatingEl) {
-            floatingEl.style.left = (e.clientX + 15) + 'px';
-            floatingEl.style.top = (e.clientY + 15) + 'px';
+
+        let currentWeek = 0;
+        let events = [];
+        let placementItem = null;
+        let pendingPlacement = null;
+        let editingEventId = null;
+        let floatingEl = null;
+        let eventIdCounter = 0;
+        let tickInterval = null;
+        let isRealTime = false;
+        let draggedEventId = null;
+
+        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+        function saveData() {
+            localStorage.setItem('lifeHoursSettings', JSON.stringify(settings));
+            localStorage.setItem('lifeHoursEvents', JSON.stringify(events));
         }
-    };
-    document.addEventListener('mousemove', window.mouseMoveHandler);
 
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && placementItem) cancelPlacement(); });
-    document.addEventListener('contextmenu', e => { if(placementItem) { e.preventDefault(); cancelPlacement(); }});
+        function loadData() {
+            const savedSettings = localStorage.getItem('lifeHoursSettings');
+            const savedEvents = localStorage.getItem('lifeHoursEvents');
 
-    renderWeek();
-}
-
-function openItemModal(existingEventId = null) { 
-    editingEventId = existingEventId;
-    document.getElementById('modalDeleteBtn').classList.add('hidden');
-
-    if (existingEventId !== null) {
-        const ev = events.find(e => e.id === existingEventId);
-        document.getElementById('modalTitle').innerText = "Edit Allocation";
-        document.getElementById('itemTitle').value = ev.title;
-        document.getElementById('itemCost').value = ev.cost;
-        document.getElementById('itemCategory').value = ev.category;
-        document.getElementById('modalBtn').innerText = "Save Changes";
-        document.getElementById('modalDeleteBtn').classList.remove('hidden');
-    } else {
-        document.getElementById('itemTitle').value = '';
-        document.getElementById('itemCost').value = '';
-        if(pendingPlacement) {
-            document.getElementById('modalTitle').innerText = "Direct Allocation";
-            document.getElementById('modalBtn').innerText = "Lock into Timeslot";
-        } else {
-            document.getElementById('modalTitle').innerText = "Allocate Hours";
-            document.getElementById('modalBtn').innerText = "Create & Place";
-        }
-    }
-    
-    document.getElementById('itemModal').classList.remove('hidden'); 
-    
-    setTimeout(() => {
-        document.getElementById('itemTitle').focus();
-    }, 50);
-}
-
-function closeItemModal() { 
-    pendingPlacement = null;
-    editingEventId = null;
-    document.getElementById('itemModal').classList.add('hidden'); 
-}
-
-function saveSettings() {
-    const d = new Date(document.getElementById('startDate').value);
-    settings.startDate = new Date(d.getTime() + Math.abs(d.getTimezoneOffset() * 60000));
-    settings.startTime = document.getElementById('startTime').value;
-    settings.endTime = document.getElementById('endTime').value;
-    settings.lunchStart = document.getElementById('lunchStart').value;
-    settings.lunchEnd = document.getElementById('lunchEnd').value;
-    settings.hourlyRate = parseFloat(document.getElementById('hourlyRate').value);
-    
-    saveData();
-    document.getElementById('setupModal').classList.add('hidden');
-    renderWeek();
-}
-
-function submitItem() {
-    const title = document.getElementById('itemTitle').value;
-    const cost = parseFloat(document.getElementById('itemCost').value);
-    const category = document.getElementById('itemCategory').value;
-    
-    if(!title || isNaN(cost) || cost <= 0) return;
-    const minutesNeeded = Math.ceil((cost / settings.hourlyRate) * 60);
-
-    if (editingEventId !== null) {
-        const evIndex = events.findIndex(e => e.id === editingEventId);
-        const oldEv = events[evIndex];
-        
-        events.splice(evIndex, 1);
-        
-        const segments = calculatePlacement(oldEv.dateStr, oldEv.segments[0].startMin, minutesNeeded);
-        
-        if (segments) {
-            events.push({
-                ...oldEv,
-                title, cost, category, totalMins: minutesNeeded, segments
-            });
-            saveData();
-            renderWeek();
-        } else {
-            events.push(oldEv);
-            alert("Warning: Target allocation exceeds remaining clear bounds.");
-        }
-        closeItemModal();
-        return;
-    }
-
-    if (pendingPlacement) {
-        const segments = calculatePlacement(pendingPlacement.dateStr, pendingPlacement.startMin, minutesNeeded);
-        if (segments) {
-            events.push({
-                id: eventIdCounter++,
-                dateStr: pendingPlacement.dateStr,
-                title, cost, category, totalMins: minutesNeeded, segments
-            });
-            saveData();
-            renderWeek();
-        } else {
-            alert("Not enough continuous time left in that day for this allocation.");
-        }
-        closeItemModal();
-    } else {
-        placementItem = { title, cost, category, minutes: minutesNeeded };
-        
-        floatingEl = document.createElement('div');
-        floatingEl.className = `event ${category} floating-cursor`;
-        let visualHours = (minutesNeeded / 60).toFixed(1);
-        floatingEl.innerHTML = `<b>${title}</b><span>$${cost} (${visualHours}h)</span>`;
-        document.body.appendChild(floatingEl);
-        
-        setHelperState(true);
-        closeItemModal();
-    }
-}
-
-function deleteItem() {
-    if(editingEventId !== null && confirm("Delete this allocation and free up these hours?")) {
-        events = events.filter(e => e.id !== editingEventId);
-        saveData();
-        renderWeek();
-        closeItemModal();
-    }
-}
-
-function cancelPlacement() {
-    placementItem = null;
-    if (floatingEl) { floatingEl.remove(); floatingEl = null; }
-    document.querySelectorAll('.highlight-valid').forEach(el => el.remove());
-    setHelperState(false);
-}
-
-function setHelperState(isPlacing) {
-    const el = document.getElementById('helper-text');
-    if (isPlacing) {
-        el.innerHTML = `<b>Placement Mode Active</b><br><br>Hover over a green block to snap.<br>Click to place item.<br><span style="font-size:11px;opacity:0.7">Press ESC to cancel.</span>`;
-        el.style.background = '#e6f4ea'; el.style.color = '#1e8e3e';
-    } else {
-        el.innerHTML = `Click a slot or the <b>+</b> button to allocate your life hours.`;
-        el.style.background = '#e8f0fe'; el.style.color = 'var(--primary)';
-    }
-}
-
-function toMins(t) { const [h, m] = t.split(':').map(Number); return h * 60 + m; }
-function formatTime(m) { 
-    const h = Math.floor(m/60); const mins = m % 60;
-    const suffix = h >= 12 ? 'PM' : 'AM';
-    return `${h%12||12}:${mins.toString().padStart(2, '0')} ${suffix}`; 
-}
-function isPastDay(date) {
-    let d1 = new Date(date); d1.setHours(0,0,0,0);
-    let d2 = new Date(settings.startDate); d2.setHours(0,0,0,0);
-    return d1 < d2;
-}
-
-function calculatePlacement(dateStr, startMin, requiredMins, ignoreEventId = null) {
-    let segments = [];
-    let currentSeg = null;
-    let minsGathered = 0;
-    let m = startMin;
-
-    const endMins = toMins(settings.endTime);
-    const ls = toMins(settings.lunchStart);
-    const le = toMins(settings.lunchEnd);
-
-    const ignoreId = ignoreEventId !== null ? Number(ignoreEventId) : null;
-
-let occupied = new Set();
-
-for (const e of events) {
-    if (e.dateStr !== dateStr) continue;
-    if (e.id === ignoreId) continue;
-
-    for (const seg of e.segments) {
-        for (let i = 0; i < seg.duration; i++) {
-            occupied.add(seg.startMin + i);
-        }
-    }
-}
-
-    // Modified lookahead: dynamically bypass allocations that aren't the ignored dragging item or the lunch period
-    while (m < endMins && (occupied.has(m) || (m >= ls && m < le))) { m++; }
-
-    while (minsGathered < requiredMins && m < endMins) {
-        let isFree = !occupied.has(m) && !(m >= ls && m < le);
-
-        if (isFree) {
-            if (!currentSeg) {
-                currentSeg = { startMin: m, duration: 0 };
-                segments.push(currentSeg);
+            if (savedSettings) {
+                settings = JSON.parse(savedSettings);
+                settings.startDate = new Date(settings.startDate);
             }
-            currentSeg.duration++;
-            minsGathered++;
-        } else {
-            currentSeg = null;
-        }
-        m++;
-    }
 
-    if (minsGathered < requiredMins) return null; 
-    return segments;
-}
-
-function renderWeek() {
-    const calendar = document.getElementById('calendar');
-    calendar.innerHTML = "";
-    
-    const dayStartMin = toMins(settings.startTime);
-    const dayEndMin = toMins(settings.endTime);
-    const totalDayMins = dayEndMin - dayStartMin;
-
-    const targetDate = new Date(settings.startDate);
-    targetDate.setDate(targetDate.getDate() + (currentWeek * 7));
-    const dayOfWeek = targetDate.getDay();
-    const sunday = new Date(targetDate);
-    sunday.setDate(sunday.getDate() - dayOfWeek);
-
-    const activeDates = [];
-    for(let i=0; i<7; i++) {
-        let d = new Date(sunday);
-        d.setDate(d.getDate() + i);
-        if(settings.enabledDays.includes(d.getDay())) activeDates.push(d);
-    }
-
-    calendar.innerHTML += '<div class="header" style="border-right: 1px solid var(--border)">Time</div>';
-    activeDates.forEach(d => {
-        calendar.innerHTML += `<div class="header">${d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'})}</div>`;
-    });
-    calendar.style.gridTemplateColumns = `80px repeat(${activeDates.length}, 1fr)`;
-
-    const timeCol = document.createElement('div');
-    timeCol.className = 'time-col';
-    timeCol.style.height = `${totalDayMins * PX_PER_MIN}px`;
-    for (let m = dayStartMin; m < dayEndMin; m += 30) {
-        const tLabel = document.createElement('div');
-        tLabel.className = 'time-label';
-        tLabel.innerText = formatTime(m);
-        timeCol.appendChild(tLabel);
-    }
-    calendar.appendChild(timeCol);
-
-    activeDates.forEach(date => {
-        const dateStr = date.toDateString();
-        const isPast = isPastDay(date);
-
-        const col = document.createElement('div');
-        col.className = `day-col ${isPast ? 'past-day' : ''}`;
-        col.style.height = `${totalDayMins * PX_PER_MIN}px`;
-        col.dataset.date = dateStr;
-
-        if (!isPast) {
-            col.addEventListener('dragover', e => { e.preventDefault(); });
-            col.addEventListener('dragenter', e => { e.preventDefault(); });
-        }
-
-        for (let m = dayStartMin; m < dayEndMin; m += 30) {
-            const slot = document.createElement('div');
-            slot.className = 'slot-bg';
-            if (!isPast) {
-                slot.addEventListener('mouseenter', () => handleHover(dateStr, m));
-                slot.addEventListener('mouseleave', () => { 
-                    if (draggedEventId === null) document.querySelectorAll('.highlight-valid').forEach(el => el.remove()); 
-                });
-                slot.addEventListener('click', () => handleClick(dateStr, m));
-                
-                slot.addEventListener('dragenter', (e) => {
-                    e.preventDefault();
-                    if (draggedEventId !== null) {
-                        handleHover(dateStr, m, draggedEventId ?? editingEventId);
-                    }
-                });
-                slot.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                });
-                slot.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    if (draggedEventId !== null) {
-                        handleDrop(dateStr, m, draggedEventId);
-                    }
-                });
+            if (savedEvents) {
+                events = JSON.parse(savedEvents);
+                eventIdCounter = events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 0;
             }
-            col.appendChild(slot);
         }
 
-        const ls = toMins(settings.lunchStart);
-        const le = toMins(settings.lunchEnd);
-        if (ls >= dayStartMin && le <= dayEndMin) {
-            const lunch = document.createElement('div');
-            lunch.className = 'lunch-block';
-            lunch.style.top = `${(ls - dayStartMin) * PX_PER_MIN}px`;
-            lunch.style.height = `${(le - ls) * PX_PER_MIN}px`;
-            lunch.innerText = 'LUNCH';
-            col.appendChild(lunch);
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ settings, events }));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `profile_${new Date().toISOString().slice(0, 10)}.lifehours`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
         }
 
-        const hlContainer = document.createElement('div');
-        hlContainer.id = `hl-${dateStr.replace(/\s/g,'')}`;
-        col.appendChild(hlContainer);
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-        events.forEach(ev => {
-            if (ev.dateStr === dateStr) {
-                ev.segments.forEach((seg, idx) => {
-                    const el = document.createElement('div');
-                    el.className = `event ${ev.category}`;
-                    el.style.top = `${(seg.startMin - dayStartMin) * PX_PER_MIN + 2}px`; 
-                    el.style.height = `${seg.duration * PX_PER_MIN - 4}px`; 
-                    
-                    let visualHours = (ev.totalMins / 60).toFixed(1);
-                    el.title = `${ev.title}\nCost: $${ev.cost}\nTime: ${visualHours} hours\nCategory: ${ev.category.toUpperCase()}`;
-                    
-                    el.onclick = (e) => { e.stopPropagation(); openItemModal(ev.id); };
-                    
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed.settings && parsed.events) {
+                        settings = parsed.settings;
+                        settings.startDate = new Date(settings.startDate);
+                        events = parsed.events;
+                        eventIdCounter = events.length > 0 ? Math.max(...events.map(ev => ev.id)) + 1 : 0;
+
+                        saveData();
+                        init();
+                        document.getElementById('setupModal').classList.add('hidden');
+                        alert("Data configuration imported successfully!");
+                    } else {
+                        alert("Error: File matching standard criteria was not found.");
+                    }
+                } catch (err) {
+                    alert("Failed to parse file structural hierarchy.");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function wipeData() {
+            if (confirm("Are you sure you want to delete all your settings and placed allocations? This cannot be undone.")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        function init() {
+            loadData();
+
+            document.getElementById('startDate').valueAsDate = settings.startDate;
+            document.getElementById('startTime').value = settings.startTime;
+            document.getElementById('endTime').value = settings.endTime;
+            document.getElementById('lunchStart').value = settings.lunchStart;
+            document.getElementById('lunchEnd').value = settings.lunchEnd;
+            document.getElementById('hourlyRate').value = settings.hourlyRate;
+
+            const container = document.getElementById('daysContainer');
+            container.innerHTML = '';
+            dayNames.forEach((name, i) => {
+                const pill = document.createElement('div');
+                pill.className = `day-pill ${settings.enabledDays.includes(i) ? 'active' : ''}`;
+                pill.innerText = name;
+                pill.style.margin = "0 4px 4px 0";
+                pill.onclick = () => {
+                    if (settings.enabledDays.includes(i)) {
+                        settings.enabledDays = settings.enabledDays.filter(d => d !== i);
+                        pill.classList.remove('active');
+                    } else {
+                        settings.enabledDays.push(i);
+                        pill.classList.add('active');
+                    }
+                };
+                container.appendChild(pill);
+            });
+
+            document.removeEventListener('mousemove', window.mouseMoveHandler);
+            window.mouseMoveHandler = e => {
+                if (floatingEl) {
+                    floatingEl.style.left = (e.clientX + 15) + 'px';
+                    floatingEl.style.top = (e.clientY + 15) + 'px';
+                }
+            };
+            document.addEventListener('mousemove', window.mouseMoveHandler);
+
+            document.addEventListener('keydown', e => { if (e.key === 'Escape' && placementItem) cancelPlacement(); });
+            document.addEventListener('contextmenu', e => { if (placementItem) { e.preventDefault(); cancelPlacement(); } });
+
+            renderWeek();
+        }
+
+        function openItemModal(existingEventId = null) {
+            editingEventId = existingEventId;
+            document.getElementById('modalDeleteBtn').classList.add('hidden');
+
+            if (existingEventId !== null) {
+                const ev = events.find(e => e.id === existingEventId);
+                document.getElementById('modalTitle').innerText = "Edit Allocation";
+                document.getElementById('itemTitle').value = ev.title;
+                document.getElementById('itemCost').value = ev.cost;
+                document.getElementById('itemCategory').value = ev.category;
+                document.getElementById('modalBtn').innerText = "Save Changes";
+                document.getElementById('modalDeleteBtn').classList.remove('hidden');
+            } else {
+                document.getElementById('itemTitle').value = '';
+                document.getElementById('itemCost').value = '';
+                if (pendingPlacement) {
+                    document.getElementById('modalTitle').innerText = "Direct Allocation";
+                    document.getElementById('modalBtn').innerText = "Lock into Timeslot";
+                } else {
+                    document.getElementById('modalTitle').innerText = "Allocate Hours";
+                    document.getElementById('modalBtn').innerText = "Create & Place";
+                }
+            }
+
+            document.getElementById('itemModal').classList.remove('hidden');
+
+            setTimeout(() => {
+                document.getElementById('itemTitle').focus();
+            }, 50);
+        }
+
+        function closeItemModal() {
+            pendingPlacement = null;
+            editingEventId = null;
+            document.getElementById('itemModal').classList.add('hidden');
+        }
+
+        function saveSettings() {
+            const d = new Date(document.getElementById('startDate').value);
+            settings.startDate = new Date(d.getTime() + Math.abs(d.getTimezoneOffset() * 60000));
+            settings.startTime = document.getElementById('startTime').value;
+            settings.endTime = document.getElementById('endTime').value;
+            settings.lunchStart = document.getElementById('lunchStart').value;
+            settings.lunchEnd = document.getElementById('lunchEnd').value;
+            settings.hourlyRate = parseFloat(document.getElementById('hourlyRate').value);
+
+            saveData();
+            document.getElementById('setupModal').classList.add('hidden');
+            renderWeek();
+        }
+
+        function submitItem() {
+            const title = document.getElementById('itemTitle').value;
+            const cost = parseFloat(document.getElementById('itemCost').value);
+            const category = document.getElementById('itemCategory').value;
+
+            if (!title || isNaN(cost) || cost <= 0) return;
+            const minutesNeeded = Math.ceil((cost / settings.hourlyRate) * 60);
+
+            if (editingEventId !== null) {
+                const evIndex = events.findIndex(e => e.id === editingEventId);
+                const oldEv = events[evIndex];
+
+                events.splice(evIndex, 1);
+
+                const segments = calculatePlacement(oldEv.dateStr, oldEv.segments[0].startMin, minutesNeeded);
+
+                if (segments) {
+                    events.push({
+                        ...oldEv,
+                        title, cost, category, totalMins: minutesNeeded, segments
+                    });
+                    saveData();
+                    renderWeek();
+                } else {
+                    events.push(oldEv);
+                    alert("Warning: Target allocation exceeds remaining clear bounds.");
+                }
+                closeItemModal();
+                return;
+            }
+
+            if (pendingPlacement) {
+                const segments = calculatePlacement(pendingPlacement.dateStr, pendingPlacement.startMin, minutesNeeded);
+                if (segments) {
+                    events.push({
+                        id: eventIdCounter++,
+                        dateStr: pendingPlacement.dateStr,
+                        title, cost, category, totalMins: minutesNeeded, segments
+                    });
+                    saveData();
+                    renderWeek();
+                } else {
+                    alert("Not enough continuous time left in that day for this allocation.");
+                }
+                closeItemModal();
+            } else {
+                placementItem = { title, cost, category, minutes: minutesNeeded };
+
+                floatingEl = document.createElement('div');
+                floatingEl.className = `event ${category} floating-cursor`;
+                let visualHours = (minutesNeeded / 60).toFixed(1);
+                floatingEl.innerHTML = `<b>${title}</b><span>$${cost} (${visualHours}h)</span>`;
+                document.body.appendChild(floatingEl);
+
+                setHelperState(true);
+                closeItemModal();
+            }
+        }
+
+        function deleteItem() {
+            if (editingEventId !== null && confirm("Delete this allocation and free up these hours?")) {
+                events = events.filter(e => e.id !== editingEventId);
+                saveData();
+                renderWeek();
+                closeItemModal();
+            }
+        }
+
+        function cancelPlacement() {
+            placementItem = null;
+            if (floatingEl) { floatingEl.remove(); floatingEl = null; }
+            document.querySelectorAll('.highlight-valid').forEach(el => el.remove());
+            setHelperState(false);
+        }
+
+        function setHelperState(isPlacing) {
+            const el = document.getElementById('helper-text');
+            if (isPlacing) {
+                el.innerHTML = `<b>Placement Mode Active</b><br><br>Hover over a green block to snap.<br>Click to place item.<br><span style="font-size:11px;opacity:0.7">Press ESC to cancel.</span>`;
+                el.style.background = '#e6f4ea'; el.style.color = '#1e8e3e';
+            } else {
+                el.innerHTML = `Click a slot or the <b>+</b> button to allocate your life hours.`;
+                el.style.background = '#e8f0fe'; el.style.color = 'var(--primary)';
+            }
+        }
+
+        function toMins(t) { const [h, m] = t.split(':').map(Number); return h * 60 + m; }
+        function formatTime(m) {
+            const h = Math.floor(m / 60); const mins = m % 60;
+            const suffix = h >= 12 ? 'PM' : 'AM';
+            return `${h % 12 || 12}:${mins.toString().padStart(2, '0')} ${suffix}`;
+        }
+        function isPastDay(date) {
+            let d1 = new Date(date); d1.setHours(0, 0, 0, 0);
+            let d2 = new Date(settings.startDate); d2.setHours(0, 0, 0, 0);
+            return d1 < d2;
+        }
+
+        function calculatePlacement(dateStr, startMin, requiredMins, ignoreEventId = null) {
+            let segments = [];
+            let currentSeg = null;
+            let minsGathered = 0;
+            let m = startMin;
+
+            const endMins = toMins(settings.endTime);
+            const ls = toMins(settings.lunchStart);
+            const le = toMins(settings.lunchEnd);
+
+            const ignoreId = ignoreEventId !== null ? Number(ignoreEventId) : null;
+
+            let occupied = new Set();
+
+            for (const e of events) {
+                if (e.dateStr !== dateStr) continue;
+                if (e.id === ignoreId) continue;
+
+                for (const seg of e.segments) {
+                    for (let i = 0; i < seg.duration; i++) {
+                        occupied.add(seg.startMin + i);
+                    }
+                }
+            }
+
+            // Modified lookahead: dynamically bypass allocations that aren't the ignored dragging item or the lunch period
+            while (m < endMins && (occupied.has(m) || (m >= ls && m < le))) { m++; }
+
+            while (minsGathered < requiredMins && m < endMins) {
+                let isFree = !occupied.has(m) && !(m >= ls && m < le);
+
+                if (isFree) {
+                    if (!currentSeg) {
+                        currentSeg = { startMin: m, duration: 0 };
+                        segments.push(currentSeg);
+                    }
+                    currentSeg.duration++;
+                    minsGathered++;
+                } else {
+                    currentSeg = null;
+                }
+                m++;
+            }
+
+            if (minsGathered < requiredMins) return null;
+            return segments;
+        }
+
+        function renderWeek() {
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = "";
+
+            const dayStartMin = toMins(settings.startTime);
+            const dayEndMin = toMins(settings.endTime);
+            const totalDayMins = dayEndMin - dayStartMin;
+
+            const targetDate = new Date(settings.startDate);
+            targetDate.setDate(targetDate.getDate() + (currentWeek * 7));
+            const dayOfWeek = targetDate.getDay();
+            const sunday = new Date(targetDate);
+            sunday.setDate(sunday.getDate() - dayOfWeek);
+
+            const activeDates = [];
+            for (let i = 0; i < 7; i++) {
+                let d = new Date(sunday);
+                d.setDate(d.getDate() + i);
+                if (settings.enabledDays.includes(d.getDay())) activeDates.push(d);
+            }
+
+            calendar.innerHTML += '<div class="header" style="border-right: 1px solid var(--border)">Time</div>';
+            activeDates.forEach(d => {
+                calendar.innerHTML += `<div class="header">${d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>`;
+            });
+            calendar.style.gridTemplateColumns = `80px repeat(${activeDates.length}, 1fr)`;
+
+            const timeCol = document.createElement('div');
+            timeCol.className = 'time-col';
+            timeCol.style.height = `${totalDayMins * PX_PER_MIN}px`;
+            for (let m = dayStartMin; m < dayEndMin; m += 30) {
+                const tLabel = document.createElement('div');
+                tLabel.className = 'time-label';
+                tLabel.innerText = formatTime(m);
+                timeCol.appendChild(tLabel);
+            }
+            calendar.appendChild(timeCol);
+
+            activeDates.forEach(date => {
+                const dateStr = date.toDateString();
+                const isPast = isPastDay(date);
+
+                const col = document.createElement('div');
+                col.className = `day-col ${isPast ? 'past-day' : ''}`;
+                col.style.height = `${totalDayMins * PX_PER_MIN}px`;
+                col.dataset.date = dateStr;
+
+                if (!isPast) {
+                    col.addEventListener('dragover', e => { e.preventDefault(); });
+                    col.addEventListener('dragenter', e => { e.preventDefault(); });
+                }
+
+                for (let m = dayStartMin; m < dayEndMin; m += 30) {
+                    const slot = document.createElement('div');
+                    slot.className = 'slot-bg';
                     if (!isPast) {
-                        el.addEventListener("mousedown", (e) => {
-    startEventDrag(e, ev);
-});
-                        el.addEventListener('dragend', (e) => {
-                            e.stopPropagation();
-                            draggedEventId = null;
-                            el.classList.remove('dragging');
-                            document.querySelectorAll('.highlight-valid').forEach(hl => hl.remove());
+                        slot.addEventListener('mouseenter', () => handleHover(dateStr, m));
+                        slot.addEventListener('mouseleave', () => {
+                            if (draggedEventId === null) document.querySelectorAll('.highlight-valid').forEach(el => el.remove());
+                        });
+                        slot.addEventListener('click', () => handleClick(dateStr, m));
+
+                        slot.addEventListener('dragenter', (e) => {
+                            e.preventDefault();
+                            if (draggedEventId !== null) {
+                                handleHover(dateStr, m, draggedEventId ?? editingEventId);
+                            }
+                        });
+                        slot.addEventListener('dragover', (e) => {
+                            e.preventDefault();
+                        });
+                        slot.addEventListener('drop', (e) => {
+                            e.preventDefault();
+                            if (draggedEventId !== null) {
+                                handleDrop(dateStr, m, draggedEventId);
+                            }
                         });
                     }
+                    col.appendChild(slot);
+                }
 
-                    if (idx === 0) {
-                        el.innerHTML = `<b>${ev.title}</b><span>$${ev.cost} (${visualHours}h)</span>`;
-                    } else {
-                        el.innerHTML = `<b style="opacity:0.8">${ev.title} (Cont.)</b>`;
+                const ls = toMins(settings.lunchStart);
+                const le = toMins(settings.lunchEnd);
+                if (ls >= dayStartMin && le <= dayEndMin) {
+                    const lunch = document.createElement('div');
+                    lunch.className = 'lunch-block';
+                    lunch.style.top = `${(ls - dayStartMin) * PX_PER_MIN}px`;
+                    lunch.style.height = `${(le - ls) * PX_PER_MIN}px`;
+                    lunch.innerText = 'LUNCH';
+                    col.appendChild(lunch);
+                }
+
+                const hlContainer = document.createElement('div');
+                hlContainer.id = `hl-${dateStr.replace(/\s/g, '')}`;
+                col.appendChild(hlContainer);
+
+                events.forEach(ev => {
+                    if (ev.dateStr === dateStr) {
+                        ev.segments.forEach((seg, idx) => {
+                            const el = document.createElement('div');
+                            el.className = `event ${ev.category}`;
+                            el.style.top = `${(seg.startMin - dayStartMin) * PX_PER_MIN + 2}px`;
+                            el.style.height = `${seg.duration * PX_PER_MIN - 4}px`;
+
+                            let visualHours = (ev.totalMins / 60).toFixed(1);
+                            el.title = `${ev.title}\nCost: $${ev.cost}\nTime: ${visualHours} hours\nCategory: ${ev.category.toUpperCase()}`;
+
+
+                            if (!isPast) {
+                                el.addEventListener("mousedown", (e) => {
+                                    startEventDrag(e, ev);
+                                });
+                                el.addEventListener('dragend', (e) => {
+                                    e.stopPropagation();
+                                    draggedEventId = null;
+                                    el.classList.remove('dragging');
+                                    document.querySelectorAll('.highlight-valid').forEach(hl => hl.remove());
+                                });
+                            }
+
+                            if (idx === 0) {
+                                el.innerHTML = `
+                            <button class="event-edit-btn">✎</button>
+
+                            <div class="event-content">
+                                <b>${ev.title}</b>
+                                <span>$${ev.cost} (${visualHours}h)</span>
+                            </div>
+                        `;
+                            } else {
+                                el.innerHTML = `
+                            <button class="event-edit-btn">✎</button>
+
+                            <div class="event-content">
+                                <b style="opacity:0.8">${ev.title} (Cont.)</b>
+                            </div>
+                        `;
+                            }
+                            const editBtn = el.querySelector('.event-edit-btn');
+
+                            editBtn.addEventListener('mousedown', (e) => {
+                                e.stopPropagation();
+                            });
+
+                            editBtn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                openItemModal(ev.id);
+                            });
+                            col.appendChild(el);
+                        });
                     }
-                    col.appendChild(el);
+                });
+
+                calendar.appendChild(col);
+            });
+
+            updateStats(activeDates);
+
+            let weekEnd = new Date(activeDates[activeDates.length - 1]);
+            document.getElementById('weekLabel').innerText = `${activeDates[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+        }
+
+        function handleHover(dateStr, startMin, ignoreEventId = null) {
+            let targetMins = 0;
+
+            if (placementItem) {
+                targetMins = placementItem.minutes;
+            } else if (ignoreEventId !== null) {
+                const ev = events.find(e => e.id === Number(ignoreEventId));
+                if (ev) targetMins = ev.totalMins;
+            } else {
+                return;
+            }
+
+            document.querySelectorAll('.highlight-valid').forEach(el => el.remove());
+
+            // 🔥 IMPORTANT: temporarily remove dragged event from consideration entirely
+            const originalEvents = events;
+
+            const filteredEvents = events.filter(e => e.id !== Number(ignoreEventId));
+
+            // temporarily swap global reference for calculation ONLY
+            events = filteredEvents;
+
+            const segments = calculatePlacement(dateStr, startMin, targetMins);
+
+            events = originalEvents;
+
+            const hlContainer = document.getElementById(`hl-${dateStr.replace(/\s/g, '')}`);
+
+            if (segments && hlContainer) {
+                const dayStartMin = toMins(settings.startTime);
+
+                segments.forEach(seg => {
+                    const hl = document.createElement('div');
+                    hl.className = 'highlight-valid';
+                    hl.style.position = 'absolute';
+                    hl.style.left = '4px';
+                    hl.style.right = '4px';
+                    hl.style.top = `${(seg.startMin - dayStartMin) * PX_PER_MIN + 2}px`;
+                    hl.style.height = `${seg.duration * PX_PER_MIN - 4}px`;
+                    hlContainer.appendChild(hl);
                 });
             }
-        });
-
-        calendar.appendChild(col);
-    });
-
-    updateStats(activeDates);
-    
-    let weekEnd = new Date(activeDates[activeDates.length-1]);
-    document.getElementById('weekLabel').innerText = `${activeDates[0].toLocaleDateString('en-US', {month:'short', day:'numeric'})} - ${weekEnd.toLocaleDateString('en-US', {month:'short', day:'numeric'})}`;
-}
-
-function handleHover(dateStr, startMin, ignoreEventId = null) {
-    let targetMins = 0;
-
-    if (placementItem) {
-        targetMins = placementItem.minutes;
-    } else if (ignoreEventId !== null) {
-        const ev = events.find(e => e.id === Number(ignoreEventId));
-        if (ev) targetMins = ev.totalMins;
-    } else {
-        return;
-    }
-
-    document.querySelectorAll('.highlight-valid').forEach(el => el.remove());
-
-    // 🔥 IMPORTANT: temporarily remove dragged event from consideration entirely
-    const originalEvents = events;
-
-    const filteredEvents = events.filter(e => e.id !== Number(ignoreEventId));
-
-    // temporarily swap global reference for calculation ONLY
-    events = filteredEvents;
-
-    const segments = calculatePlacement(dateStr, startMin, targetMins);
-
-    events = originalEvents;
-
-    const hlContainer = document.getElementById(`hl-${dateStr.replace(/\s/g,'')}`);
-
-    if (segments && hlContainer) {
-        const dayStartMin = toMins(settings.startTime);
-
-        segments.forEach(seg => {
-            const hl = document.createElement('div');
-            hl.className = 'highlight-valid';
-            hl.style.position = 'absolute';
-            hl.style.left = '4px';
-            hl.style.right = '4px';
-            hl.style.top = `${(seg.startMin - dayStartMin) * PX_PER_MIN + 2}px`;
-            hl.style.height = `${seg.duration * PX_PER_MIN - 4}px`;
-            hlContainer.appendChild(hl);
-        });
-    }
-}
-function handleClick(dateStr, startMin) {
-    if (!placementItem) {
-        pendingPlacement = { dateStr, startMin };
-        openItemModal();
-        return;
-    }
-    
-    const segments = calculatePlacement(dateStr, startMin, placementItem.minutes);
-
-    if (segments) {
-        events.push({
-            id: eventIdCounter++,
-            dateStr,
-            title: placementItem.title,
-            cost: placementItem.cost,
-            category: placementItem.category,
-            totalMins: placementItem.minutes,
-            segments: segments
-        });
-        saveData();
-        cancelPlacement();
-        renderWeek();
-    }
-}
-
-function handleDrop(dateStr, startMin, eventId) {
-    const evIndex = events.findIndex(e => e.id === Number(eventId));
-    if (evIndex === -1) return;
-    
-    const ev = events[evIndex];
-    const segments = calculatePlacement(dateStr, startMin, ev.totalMins, Number(eventId));
-    
-    if (segments) {
-        ev.dateStr = dateStr;
-        ev.segments = segments;
-        saveData();
-    }
-    draggedEventId = null;
-    renderWeek();
-}
-
-function changeWeek(direction) {
-    currentWeek += direction;
-    renderWeek();
-}
-
-function updateStats(activeDates) {
-    const dayStartMin = toMins(settings.startTime);
-    const dayEndMin = toMins(settings.endTime);
-    const ls = toMins(settings.lunchStart);
-    const le = toMins(settings.lunchEnd);
-    const lunchDuration = Math.max(0, le - ls);
-    const workMinsPerDay = (dayEndMin - dayStartMin) - lunchDuration;
-    
-    const totalWeeklyMins = workMinsPerDay * activeDates.length;
-    const totalWeeklyHours = totalWeeklyMins / 60;
-    const capacityValue = totalWeeklyHours * settings.hourlyRate;
-    
-    let allocatedMins = 0;
-    let allocatedValue = 0;
-    
-    const activeDateStrings = activeDates.map(d => d.toDateString());
-    
-    events.forEach(ev => {
-        if (activeDateStrings.includes(ev.dateStr)) {
-            allocatedValue += ev.cost;
-            allocatedMins += ev.totalMins;
         }
-    });
-    
-    document.getElementById('stat-total').innerText = `$${capacityValue.toFixed(2)}`;
-    document.getElementById('stat-allocated').innerText = `$${allocatedValue.toFixed(2)}`;
-    document.getElementById('stat-hours').innerText = `${(allocatedMins / 60).toFixed(1)}h / ${totalWeeklyHours.toFixed(1)}h`;
-    
-    calculateAndDisplayGlobalSavings();
-}
+        function handleClick(dateStr, startMin) {
+            if (!placementItem) {
+                pendingPlacement = { dateStr, startMin };
+                openItemModal();
+                return;
+            }
 
-function calculateAndDisplayGlobalSavings() {
-    const now = new Date();
-    const globalEarnings = calculateGlobalEarnings(now);
-    
-    let globalAllocatedCost = 0;
-    events.forEach(ev => {
-        globalAllocatedCost += ev.cost;
-    });
-    
-    const netSavings = globalEarnings - globalAllocatedCost;
-    document.getElementById('savings').innerText = `$${netSavings.toFixed(isRealTime ? 4 : 2)}`;
-    
-    let percent = 100;
-    if (globalEarnings > 0) {
-        percent = Math.max(0, ((globalEarnings - globalAllocatedCost) / globalEarnings) * 100);
-    }
-    
-    document.getElementById('savings-progress').style.width = `${percent}%`;
-    document.getElementById('savings-percent').innerText = `${percent.toFixed(1)}% of all-time income retained`;
-}
+            const segments = calculatePlacement(dateStr, startMin, placementItem.minutes);
 
-function calculateGlobalEarnings(now) {
-    if (now < settings.startDate) return 0;
-    
-    let earnedMins = 0;
-    let d = new Date(settings.startDate); d.setHours(0,0,0,0);
-    let end = new Date(now); end.setHours(0,0,0,0);
-
-    const ls = toMins(settings.lunchStart);
-    const le = toMins(settings.lunchEnd);
-    const ws = toMins(settings.startTime);
-    const we = toMins(settings.endTime);
-
-    while (d <= end) {
-        if (settings.enabledDays.includes(d.getDay())) {
-            if (d.getTime() === end.getTime()) { 
-                let currentMinOfDay = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60 + now.getMilliseconds() / 60000;
-                if (currentMinOfDay > ws) {
-                    let workedTo = Math.min(currentMinOfDay, we);
-                    let duration = workedTo - ws;
-                    
-                    if (currentMinOfDay > ls) {
-                        let lunchOverlap = Math.min(workedTo, le) - Math.max(ws, ls);
-                        if (lunchOverlap > 0) duration -= lunchOverlap;
-                    }
-                    earnedMins += Math.max(0, duration);
-                }
-            } else {
-                let dayDuration = (we - ws) - Math.max(0, le - ls);
-                earnedMins += dayDuration;
+            if (segments) {
+                events.push({
+                    id: eventIdCounter++,
+                    dateStr,
+                    title: placementItem.title,
+                    cost: placementItem.cost,
+                    category: placementItem.category,
+                    totalMins: placementItem.minutes,
+                    segments: segments
+                });
+                saveData();
+                cancelPlacement();
+                renderWeek();
             }
         }
-        d.setDate(d.getDate() + 1);
-    }
-    return (earnedMins / 60) * settings.hourlyRate;
-}
 
-function toggleRealTime() {
-    isRealTime = !isRealTime;
-    const indicator = document.getElementById('liveIndicator');
-    if (isRealTime) {
-        indicator.style.display = 'inline';
-        tickInterval = setInterval(calculateAndDisplayGlobalSavings, 50);
-    } else {
-        indicator.style.display = 'none';
-        clearInterval(tickInterval);
-        calculateAndDisplayGlobalSavings();
-    }
-}
+        function handleDrop(dateStr, startMin, eventId) {
+            const evIndex = events.findIndex(e => e.id === Number(eventId));
+            if (evIndex === -1) return;
 
-window.onload = init;
-</script>
-<script>
-/* =========================
-   GOOGLE CALENDAR DRAG SYSTEM
-========================= */
+            const ev = events[evIndex];
+            const segments = calculatePlacement(dateStr, startMin, ev.totalMins, Number(eventId));
 
-let dragState = null;
-let dragPreview = null;
+            if (segments) {
+                ev.dateStr = dateStr;
+                ev.segments = segments;
+                saveData();
+            }
+            draggedEventId = null;
+            renderWeek();
+        }
 
-function startEventDrag(e, ev) {
-    e.stopPropagation();
+        function changeWeek(direction) {
+            currentWeek += direction;
+            renderWeek();
+        }
 
-    dragState = {
-        id: ev.id,
-        event: structuredClone(ev),
-        offsetY: e.clientY,
-        duration: ev.totalMins
-    };
+        function updateStats(activeDates) {
+            const dayStartMin = toMins(settings.startTime);
+            const dayEndMin = toMins(settings.endTime);
+            const ls = toMins(settings.lunchStart);
+            const le = toMins(settings.lunchEnd);
+            const lunchDuration = Math.max(0, le - ls);
+            const workMinsPerDay = (dayEndMin - dayStartMin) - lunchDuration;
 
-    const el = e.currentTarget;
+            const totalWeeklyMins = workMinsPerDay * activeDates.length;
+            const totalWeeklyHours = totalWeeklyMins / 60;
+            const capacityValue = totalWeeklyHours * settings.hourlyRate;
 
-    el.classList.add("dragging");
+            let allocatedMins = 0;
+            let allocatedValue = 0;
 
-    createDragPreview(ev);
+            const activeDateStrings = activeDates.map(d => d.toDateString());
 
-    document.addEventListener("mousemove", onDragMove);
-    document.addEventListener("mouseup", endEventDrag);
-}
+            events.forEach(ev => {
+                if (activeDateStrings.includes(ev.dateStr)) {
+                    allocatedValue += ev.cost;
+                    allocatedMins += ev.totalMins;
+                }
+            });
 
-function createDragPreview(ev) {
-    removeDragPreview();
+            document.getElementById('stat-total').innerText = `$${capacityValue.toFixed(2)}`;
+            document.getElementById('stat-allocated').innerText = `$${allocatedValue.toFixed(2)}`;
+            document.getElementById('stat-hours').innerText = `${(allocatedMins / 60).toFixed(1)}h / ${totalWeeklyHours.toFixed(1)}h`;
 
-    dragPreview = document.createElement("div");
-    dragPreview.className = `event ${ev.category}`;
-    dragPreview.style.opacity = "0.7";
-    dragPreview.style.pointerEvents = "none";
-    dragPreview.style.zIndex = "9999";
-    dragPreview.style.position = "fixed";
+            calculateAndDisplayGlobalSavings();
+        }
 
-    dragPreview.innerHTML = `
+        function calculateAndDisplayGlobalSavings() {
+            const now = new Date();
+            const globalEarnings = calculateGlobalEarnings(now);
+
+            let globalAllocatedCost = 0;
+            events.forEach(ev => {
+                globalAllocatedCost += ev.cost;
+            });
+
+            const netSavings = globalEarnings - globalAllocatedCost;
+            document.getElementById('savings').innerText = `$${netSavings.toFixed(isRealTime ? 4 : 2)}`;
+
+            let percent = 100;
+            if (globalEarnings > 0) {
+                percent = Math.max(0, ((globalEarnings - globalAllocatedCost) / globalEarnings) * 100);
+            }
+
+            document.getElementById('savings-progress').style.width = `${percent}%`;
+            document.getElementById('savings-percent').innerText = `${percent.toFixed(1)}% of all-time income retained`;
+        }
+
+        function calculateGlobalEarnings(now) {
+            if (now < settings.startDate) return 0;
+
+            let earnedMins = 0;
+            let d = new Date(settings.startDate); d.setHours(0, 0, 0, 0);
+            let end = new Date(now); end.setHours(0, 0, 0, 0);
+
+            const ls = toMins(settings.lunchStart);
+            const le = toMins(settings.lunchEnd);
+            const ws = toMins(settings.startTime);
+            const we = toMins(settings.endTime);
+
+            while (d <= end) {
+                if (settings.enabledDays.includes(d.getDay())) {
+                    if (d.getTime() === end.getTime()) {
+                        let currentMinOfDay = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60 + now.getMilliseconds() / 60000;
+                        if (currentMinOfDay > ws) {
+                            let workedTo = Math.min(currentMinOfDay, we);
+                            let duration = workedTo - ws;
+
+                            if (currentMinOfDay > ls) {
+                                let lunchOverlap = Math.min(workedTo, le) - Math.max(ws, ls);
+                                if (lunchOverlap > 0) duration -= lunchOverlap;
+                            }
+                            earnedMins += Math.max(0, duration);
+                        }
+                    } else {
+                        let dayDuration = (we - ws) - Math.max(0, le - ls);
+                        earnedMins += dayDuration;
+                    }
+                }
+                d.setDate(d.getDate() + 1);
+            }
+            return (earnedMins / 60) * settings.hourlyRate;
+        }
+
+        function toggleRealTime() {
+            isRealTime = !isRealTime;
+            const indicator = document.getElementById('liveIndicator');
+            if (isRealTime) {
+                indicator.style.display = 'inline';
+                tickInterval = setInterval(calculateAndDisplayGlobalSavings, 50);
+            } else {
+                indicator.style.display = 'none';
+                clearInterval(tickInterval);
+                calculateAndDisplayGlobalSavings();
+            }
+        }
+
+        window.onload = init;
+    </script>
+    <script>
+        /* =========================
+           GOOGLE CALENDAR DRAG SYSTEM
+        ========================= */
+
+        let dragState = null;
+        let dragPreview = null;
+
+        function startEventDrag(e, ev) {
+            e.stopPropagation();
+
+            dragState = {
+                id: ev.id,
+                event: structuredClone(ev),
+                offsetY: e.clientY,
+                duration: ev.totalMins
+            };
+
+            const el = e.currentTarget;
+
+            el.classList.add("dragging");
+
+            createDragPreview(ev);
+
+            document.addEventListener("mousemove", onDragMove);
+            document.addEventListener("mouseup", endEventDrag);
+        }
+
+        function createDragPreview(ev) {
+            removeDragPreview();
+
+            dragPreview = document.createElement("div");
+            dragPreview.className = `event ${ev.category}`;
+            dragPreview.style.opacity = "0.7";
+            dragPreview.style.pointerEvents = "none";
+            dragPreview.style.zIndex = "9999";
+            dragPreview.style.position = "fixed";
+
+            dragPreview.innerHTML = `
         <b>${ev.title}</b>
         <span>$${ev.cost}</span>
     `;
 
-    document.body.appendChild(dragPreview);
-}
+            document.body.appendChild(dragPreview);
+        }
 
-function removeDragPreview() {
-    if (dragPreview) {
-        dragPreview.remove();
-        dragPreview = null;
-    }
-}
+        function removeDragPreview() {
+            if (dragPreview) {
+                dragPreview.remove();
+                dragPreview = null;
+            }
+        }
 
-function onDragMove(e) {
-    if (!dragState) return;
+        function onDragMove(e) {
+            if (!dragState) return;
 
-    dragPreview.style.left = `${e.clientX + 12}px`;
-    dragPreview.style.top = `${e.clientY + 12}px`;
+            dragPreview.style.left = `${e.clientX + 12}px`;
+            dragPreview.style.top = `${e.clientY + 12}px`;
 
-    const element = document.elementFromPoint(e.clientX, e.clientY);
+            const element = document.elementFromPoint(e.clientX, e.clientY);
 
-    if (!element) return;
+            if (!element) return;
 
-    const dayCol = element.closest(".day-col");
+            const dayCol = element.closest(".day-col");
 
-    if (!dayCol) return;
+            if (!dayCol) return;
 
-    const rect = dayCol.getBoundingClientRect();
-
-    const y = e.clientY - rect.top;
-
-    const startMin = snapMinute(
-        toMins(settings.startTime) + Math.floor(y / PX_PER_MIN)
-    );
-
-    const dateStr = dayCol.dataset.date;
-
-    renderDragPreview(dateStr, startMin);
-}
-
-function endEventDrag(e) {
-    if (!dragState) return;
-
-    const element = document.elementFromPoint(e.clientX, e.clientY);
-
-    if (element) {
-        const dayCol = element.closest(".day-col");
-
-        if (dayCol) {
             const rect = dayCol.getBoundingClientRect();
 
             const y = e.clientY - rect.top;
@@ -1055,198 +1522,221 @@ function endEventDrag(e) {
 
             const dateStr = dayCol.dataset.date;
 
-            commitDrag(dateStr, startMin);
+            renderDragPreview(dateStr, startMin);
         }
-    }
 
-    document.querySelectorAll(".event.dragging")
-        .forEach(el => el.classList.remove("dragging"));
+        function endEventDrag(e) {
+            if (!dragState) return;
 
-    clearHighlights();
+            const element = document.elementFromPoint(e.clientX, e.clientY);
 
-    removeDragPreview();
+            if (element) {
+                const dayCol = element.closest(".day-col");
 
-    dragState = null;
+                if (dayCol) {
+                    const rect = dayCol.getBoundingClientRect();
 
-    document.removeEventListener("mousemove", onDragMove);
-    document.removeEventListener("mouseup", endEventDrag);
-}
+                    const y = e.clientY - rect.top;
 
-function snapMinute(min) {
-    return Math.round(min / 15) * 15;
-}
+                    const startMin = snapMinute(
+                        toMins(settings.startTime) + Math.floor(y / PX_PER_MIN)
+                    );
 
-function renderDragPreview(dateStr, startMin) {
-    clearHighlights();
+                    const dateStr = dayCol.dataset.date;
 
-    const segments = calculatePlacement(
-        dateStr,
-        startMin,
-        dragState.duration,
-        dragState.id
-    );
+                    commitDrag(dateStr, startMin);
+                }
+            }
 
-    if (!segments) return;
+            document.querySelectorAll(".event.dragging")
+                .forEach(el => el.classList.remove("dragging"));
 
-    const container =
-        document.getElementById(`hl-${dateStr.replace(/\s/g, '')}`);
+            clearHighlights();
 
-    if (!container) return;
+            removeDragPreview();
 
-    const dayStart = toMins(settings.startTime);
+            dragState = null;
 
-    segments.forEach(seg => {
-        const hl = document.createElement("div");
+            document.removeEventListener("mousemove", onDragMove);
+            document.removeEventListener("mouseup", endEventDrag);
+        }
 
-        hl.className = "highlight-valid";
+        function snapMinute(min) {
+            return Math.round(min / 15) * 15;
+        }
 
-        hl.style.position = "absolute";
-        hl.style.left = "4px";
-        hl.style.right = "4px";
+        function renderDragPreview(dateStr, startMin) {
+            clearHighlights();
 
-        hl.style.top =
-            `${(seg.startMin - dayStart) * PX_PER_MIN + 2}px`;
+            const segments = calculatePlacement(
+                dateStr,
+                startMin,
+                dragState.duration,
+                dragState.id
+            );
 
-        hl.style.height =
-            `${seg.duration * PX_PER_MIN - 4}px`;
+            if (!segments) return;
 
-        hl.style.borderRadius = "8px";
+            const container =
+                document.getElementById(`hl-${dateStr.replace(/\s/g, '')}`);
 
-        container.appendChild(hl);
-    });
-}
+            if (!container) return;
 
-function clearHighlights() {
-    document
-        .querySelectorAll(".highlight-valid")
-        .forEach(el => el.remove());
-}
+            const dayStart = toMins(settings.startTime);
 
-function commitDrag(dateStr, startMin) {
-    const ev =
-        events.find(e => e.id === dragState.id);
+            segments.forEach(seg => {
+                const hl = document.createElement("div");
 
-    if (!ev) return;
+                hl.className = "highlight-valid";
 
-    const segments = calculatePlacement(
-        dateStr,
-        startMin,
-        ev.totalMins,
-        ev.id
-    );
+                hl.style.position = "absolute";
+                hl.style.left = "4px";
+                hl.style.right = "4px";
 
-    if (!segments) return;
+                hl.style.top =
+                    `${(seg.startMin - dayStart) * PX_PER_MIN + 2}px`;
 
-    ev.dateStr = dateStr;
-    ev.segments = normalizeSegments(segments);
+                hl.style.height =
+                    `${seg.duration * PX_PER_MIN - 4}px`;
 
-    saveData();
+                hl.style.borderRadius = "8px";
 
-    renderWeek();
-}
+                container.appendChild(hl);
+            });
+        }
 
-function normalizeSegments(segments) {
-    if (!segments.length) return [];
+        function clearHighlights() {
+            document
+                .querySelectorAll(".highlight-valid")
+                .forEach(el => el.remove());
+        }
 
-    const merged = [];
+        function commitDrag(dateStr, startMin) {
+            const ev =
+                events.find(e => e.id === dragState.id);
 
-    let current = structuredClone(segments[0]);
+            if (!ev) return;
 
-    for (let i = 1; i < segments.length; i++) {
-        const seg = segments[i];
+            const segments = calculatePlacement(
+                dateStr,
+                startMin,
+                ev.totalMins,
+                ev.id
+            );
 
-        if (
-            current.startMin + current.duration === seg.startMin
-        ) {
-            current.duration += seg.duration;
-        } else {
+            if (!segments) return;
+
+            ev.dateStr = dateStr;
+            ev.segments = normalizeSegments(segments);
+
+            saveData();
+
+            renderWeek();
+        }
+
+        function normalizeSegments(segments) {
+            if (!segments.length) return [];
+
+            const merged = [];
+
+            let current = structuredClone(segments[0]);
+
+            for (let i = 1; i < segments.length; i++) {
+                const seg = segments[i];
+
+                if (
+                    current.startMin + current.duration === seg.startMin
+                ) {
+                    current.duration += seg.duration;
+                } else {
+                    merged.push(current);
+                    current = structuredClone(seg);
+                }
+            }
+
             merged.push(current);
-            current = structuredClone(seg);
-        }
-    }
 
-    merged.push(current);
-
-    return merged;
-}
-
-/* =========================
-   BETTER COLLISION ENGINE
-========================= */
-
-function calculatePlacement(
-    dateStr,
-    startMin,
-    requiredMins,
-    ignoreEventId = null
-) {
-    const occupied = new Set();
-
-    const ws = toMins(settings.startTime);
-    const we = toMins(settings.endTime);
-
-    const ls = toMins(settings.lunchStart);
-    const le = toMins(settings.lunchEnd);
-
-    for (const ev of events) {
-        if (ev.id === ignoreEventId) continue;
-
-        if (ev.dateStr !== dateStr) continue;
-
-        for (const seg of ev.segments) {
-            for (
-                let m = seg.startMin;
-                m < seg.startMin + seg.duration;
-                m++
-            ) {
-                occupied.add(m);
-            }
-        }
-    }
-
-    const segments = [];
-
-    let currentStart = null;
-    let gathered = 0;
-
-    for (let m = startMin; m < we; m++) {
-        const blocked =
-            occupied.has(m) ||
-            (m >= ls && m < le);
-
-        if (!blocked) {
-            if (currentStart === null) {
-                currentStart = m;
-            }
-
-            gathered++;
-        } else {
-            if (currentStart !== null) {
-                segments.push({
-                    startMin: currentStart,
-                    duration: m - currentStart
-                });
-
-                currentStart = null;
-            }
+            return merged;
         }
 
-        if (gathered >= requiredMins) {
-            if (currentStart !== null) {
-                segments.push({
-                    startMin: currentStart,
-                    duration:
-                        requiredMins -
-                        (gathered - (m - currentStart + 1))
-                });
+        /* =========================
+           BETTER COLLISION ENGINE
+        ========================= */
+
+        function calculatePlacement(
+            dateStr,
+            startMin,
+            requiredMins,
+            ignoreEventId = null
+        ) {
+            const occupied = new Set();
+
+            const ws = toMins(settings.startTime);
+            const we = toMins(settings.endTime);
+
+            const ls = toMins(settings.lunchStart);
+            const le = toMins(settings.lunchEnd);
+
+            for (const ev of events) {
+                if (ev.id === ignoreEventId) continue;
+
+                if (ev.dateStr !== dateStr) continue;
+
+                for (const seg of ev.segments) {
+                    for (
+                        let m = seg.startMin;
+                        m < seg.startMin + seg.duration;
+                        m++
+                    ) {
+                        occupied.add(m);
+                    }
+                }
             }
 
-            return normalizeSegments(segments);
-        }
-    }
+            const segments = [];
 
-    return null;
-}
-</script>
+            let currentStart = null;
+            let gathered = 0;
+
+            for (let m = startMin; m < we; m++) {
+                const blocked =
+                    occupied.has(m) ||
+                    (m >= ls && m < le);
+
+                if (!blocked) {
+                    if (currentStart === null) {
+                        currentStart = m;
+                    }
+
+                    gathered++;
+                } else {
+                    if (currentStart !== null) {
+                        segments.push({
+                            startMin: currentStart,
+                            duration: m - currentStart
+                        });
+
+                        currentStart = null;
+                    }
+                }
+
+                if (gathered >= requiredMins) {
+                    if (currentStart !== null) {
+                        segments.push({
+                            startMin: currentStart,
+                            duration:
+                                requiredMins -
+                                (gathered - (m - currentStart + 1))
+                        });
+                    }
+
+                    return normalizeSegments(segments);
+                }
+            }
+
+            return null;
+        }
+    </script>
 </body>
+
 </html>
