@@ -112,13 +112,72 @@
             border-radius: 4px;
             margin-top: 12px;
             overflow: hidden;
+            display: flex;
         }
 
         .progress-bar-fill {
             height: 100%;
             background: white;
-            border-radius: 4px;
+            border-radius: 0;
             transition: width 0.4s ease;
+        }
+
+        .progress-bar-fill:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .progress-bar-fill.invested {
+            background: var(--blue);
+            border-radius: 0;
+        }
+
+        .progress-bar-fill:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .savings-invested-panel {
+            margin-top: 12px;
+            padding: 12px 14px;
+            border-radius: 18px;
+            background: var(--blue);
+            border: 1px solid rgba(26, 115, 232, 0.35);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .savings-invested-label,
+        .savings-invested,
+        .savings-invested-note {
+            color: white;
+        }
+
+        .savings-invested-label {
+            color: #1a73e8;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .savings-invested {
+            color: #1a73e8;
+            font-size: 14px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .savings-invested::before {
+            content: '';
+        }
+
+        .savings-invested-note {
+            display: block;
+            margin-top: 8px;
+            color: rgba(26, 115, 232, 0.85);
+            font-size: 11px;
+            opacity: 0.9;
         }
 
         @keyframes pulse {
@@ -324,6 +383,42 @@
             pointer-events: none;
         }
 
+        .current-time-marker {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 0;
+            pointer-events: none;
+            z-index: 8;
+        }
+
+        .current-time-marker::before {
+            content: '';
+            position: absolute;
+            left: 4px;
+            right: 4px;
+            top: 0;
+            height: 2px;
+            background: #ea4335;
+            box-shadow: 0 0 10px rgba(234, 67, 53, 0.35);
+            border-radius: 2px;
+        }
+
+        .current-time-marker::after {
+            content: attr(data-label);
+            position: absolute;
+            top: -18px;
+            left: 4px;
+            background: #ea4335;
+            color: white;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            white-space: nowrap;
+            transform: translateY(-100%);
+            opacity: 0.95;
+        }
+
         /* EVENTS */
         @keyframes popIn {
             0% {
@@ -424,12 +519,54 @@
             background: var(--blue);
         }
 
-        .goal {
-            background: var(--purple);
-        }
-
         .food {
             background: var(--yellow);
+        }
+
+        .bill {
+            background: #fbbc04;
+        }
+        .transfer {
+            background: #7fc8ff;
+        }
+
+        .breakdown-card {
+            margin-top: 16px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            font-size: 12px;
+        }
+
+        .breakdown-card h4 {
+            margin: 0 0 10px 0;
+            font-size: 11px;
+            color: var(--sub);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .breakdown-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .breakdown-row .label {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .breakdown-row .value {
+            color: var(--text);
+            font-weight: 700;
         }
 
         .floating-cursor {
@@ -635,6 +772,7 @@
                 </div>
             </div>
             <div class="form-group"><label>Hourly Pay (Net)</label><input type="number" id="hourlyRate"></div>
+            <div class="form-group"><label>Initial Bank Balance</label><input type="number" id="initialBalance" placeholder="0.00"></div>
             <label
                 style="font-size: 12px; color: var(--sub); font-weight: 500; margin-bottom: 6px; display: block;">Active
                 Working Days</label>
@@ -671,8 +809,10 @@
                 <select id="itemCategory">
                     <option value="purchase">Purchase</option>
                     <option value="investing">Investing</option>
-                    <option value="goal">Personal Goal</option>
+                        
                     <option value="food">Food & Dining</option>
+                    <option value="bill">Bill</option>
+                    <option value="transfer">Transfer</option>
                 </select>
             </div>
             <button class="btn-primary" onclick="submitItem()" id="modalBtn">Place on Calendar</button>
@@ -695,7 +835,11 @@
                 </div>
                 <div class="savings-value" id="savings">$0</div>
                 <div class="progress-bar-bg">
+                    <div class="progress-bar-fill invested" id="invested-progress"></div>
                     <div class="progress-bar-fill" id="savings-progress"></div>
+                </div>
+                <div class="savings-invested-panel">
+                    <span class="savings-invested" id="savings-invested">$0</span>
                 </div>
                 <div style="font-size: 11px; opacity: 0.9; margin-top: 8px;" id="savings-percent">100% retained</div>
             </div>
@@ -704,39 +848,24 @@
                 style="font-size: 12px; color: var(--sub); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 12px 0;">
                 Weekly Breakdown</h3>
             <div class="stat-box">
-                <div class="title">Capacity</div>
-                <div class="val" id="stat-total">$0</div>
+                <div class="title">Money Made</div>
+                <div class="val" id="stat-earned">$0</div>
             </div>
             <div class="stat-box">
-                <div class="title">Allocated</div>
-                <div class="val" id="stat-allocated">$0</div>
+                <div class="title">Spent</div>
+                <div class="val" id="stat-spent">$0</div>
             </div>
             <div class="stat-box">
-                <div class="title">Work Hours</div>
-                <div class="val" id="stat-hours">0h</div>
+                <div class="title">Invested</div>
+                <div class="val" id="stat-invested">$0</div>
             </div>
 
-            <div class="legend-card">
-                <h4>Color Legend</h4>
-                <div class="legend-item">
-                    <div class="legend-color"
-                        style="background:var(--green-empty); border:1px solid var(--green-dark);"></div>
-                    <div class="legend-text">🟩 Unallocated (Future Profit)</div>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background:var(--primary);"></div>
-                    <div class="legend-text">🟦 Allocated Item/Goal</div>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color"
-                        style="background:#e8eaed; background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 6px);">
-                    </div>
-                    <div class="legend-text" style="color: var(--sub);">⬜ Unpaid / Lunch / Past Days</div>
-                </div>
-            </div>
-
-            <div class="helper-text" id="helper-text">
-                Click a slot or the <b>+</b> button to allocate your life hours.
+            <div class="breakdown-card">
+                <h4>Spent Breakdown</h4>
+                <div class="breakdown-row"><span class="label">Purchase</span><span class="value" id="spent-purchase">$0</span></div>
+                <div class="breakdown-row"><span class="label">Food & Dining</span><span class="value" id="spent-food">$0</span></div>
+                    <div class="breakdown-row"><span class="label">Bills</span><span class="value" id="spent-bills">$0</span></div>
+                    <div class="breakdown-row"><span class="label">Transfers</span><span class="value" id="spent-transfers">$0</span></div>
             </div>
         </div>
 
@@ -768,6 +897,7 @@
             lunchStart: "12:00",
             lunchEnd: "12:30",
             hourlyRate: 25,
+            initialBalance: 0,
             enabledDays: [1, 2, 3, 4, 5]
         };
 
@@ -779,8 +909,8 @@
         let floatingEl = null;
         let eventIdCounter = 0;
         let tickInterval = null;
+        let currentTimeInterval = null;
         let isRealTime = false;
-        let draggedEventId = null;
 
         const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -859,6 +989,7 @@
             document.getElementById('lunchStart').value = settings.lunchStart;
             document.getElementById('lunchEnd').value = settings.lunchEnd;
             document.getElementById('hourlyRate').value = settings.hourlyRate;
+            document.getElementById('initialBalance').value = settings.initialBalance;
 
             const container = document.getElementById('daysContainer');
             container.innerHTML = '';
@@ -895,18 +1026,28 @@
         }
 
         function openItemModal(existingEventId = null) {
-            editingEventId = existingEventId;
+            const eventId = existingEventId !== null && existingEventId !== undefined
+                ? Number(existingEventId)
+                : null;
+
+            editingEventId = eventId;
             document.getElementById('modalDeleteBtn').classList.add('hidden');
 
-            if (existingEventId !== null) {
-                const ev = events.find(e => e.id === existingEventId);
-                document.getElementById('modalTitle').innerText = "Edit Allocation";
-                document.getElementById('itemTitle').value = ev.title;
-                document.getElementById('itemCost').value = ev.cost;
-                document.getElementById('itemCategory').value = ev.category;
-                document.getElementById('modalBtn').innerText = "Save Changes";
-                document.getElementById('modalDeleteBtn').classList.remove('hidden');
-            } else {
+            if (eventId !== null) {
+                const ev = events.find(e => e.id === eventId);
+                if (ev) {
+                    document.getElementById('modalTitle').innerText = "Edit Allocation";
+                    document.getElementById('itemTitle').value = ev.title;
+                    document.getElementById('itemCost').value = ev.cost;
+                    document.getElementById('itemCategory').value = ev.category;
+                    document.getElementById('modalBtn').innerText = "Save Changes";
+                    document.getElementById('modalDeleteBtn').classList.remove('hidden');
+                } else {
+                    editingEventId = null;
+                }
+            }
+
+            if (editingEventId === null) {
                 document.getElementById('itemTitle').value = '';
                 document.getElementById('itemCost').value = '';
                 if (pendingPlacement) {
@@ -939,6 +1080,7 @@
             settings.lunchStart = document.getElementById('lunchStart').value;
             settings.lunchEnd = document.getElementById('lunchEnd').value;
             settings.hourlyRate = parseFloat(document.getElementById('hourlyRate').value);
+            settings.initialBalance = parseFloat(document.getElementById('initialBalance').value) || 0;
 
             saveData();
             document.getElementById('setupModal').classList.add('hidden');
@@ -1043,54 +1185,6 @@
             return d1 < d2;
         }
 
-        function calculatePlacement(dateStr, startMin, requiredMins, ignoreEventId = null) {
-            let segments = [];
-            let currentSeg = null;
-            let minsGathered = 0;
-            let m = startMin;
-
-            const endMins = toMins(settings.endTime);
-            const ls = toMins(settings.lunchStart);
-            const le = toMins(settings.lunchEnd);
-
-            const ignoreId = ignoreEventId !== null ? Number(ignoreEventId) : null;
-
-            let occupied = new Set();
-
-            for (const e of events) {
-                if (e.dateStr !== dateStr) continue;
-                if (e.id === ignoreId) continue;
-
-                for (const seg of e.segments) {
-                    for (let i = 0; i < seg.duration; i++) {
-                        occupied.add(seg.startMin + i);
-                    }
-                }
-            }
-
-            // Modified lookahead: dynamically bypass allocations that aren't the ignored dragging item or the lunch period
-            while (m < endMins && (occupied.has(m) || (m >= ls && m < le))) { m++; }
-
-            while (minsGathered < requiredMins && m < endMins) {
-                let isFree = !occupied.has(m) && !(m >= ls && m < le);
-
-                if (isFree) {
-                    if (!currentSeg) {
-                        currentSeg = { startMin: m, duration: 0 };
-                        segments.push(currentSeg);
-                    }
-                    currentSeg.duration++;
-                    minsGathered++;
-                } else {
-                    currentSeg = null;
-                }
-                m++;
-            }
-
-            if (minsGathered < requiredMins) return null;
-            return segments;
-        }
-
         function renderWeek() {
             const calendar = document.getElementById('calendar');
             calendar.innerHTML = "";
@@ -1147,27 +1241,15 @@
                     const slot = document.createElement('div');
                     slot.className = 'slot-bg';
                     if (!isPast) {
-                        slot.addEventListener('mouseenter', () => handleHover(dateStr, m));
+                        slot.addEventListener('mouseenter', () => {
+                            if (dragState) {
+                                handleHover(dateStr, m, dragState.id);
+                            }
+                        });
                         slot.addEventListener('mouseleave', () => {
-                            if (draggedEventId === null) document.querySelectorAll('.highlight-valid').forEach(el => el.remove());
+                            if (!dragState) document.querySelectorAll('.highlight-valid').forEach(el => el.remove());
                         });
                         slot.addEventListener('click', () => handleClick(dateStr, m));
-
-                        slot.addEventListener('dragenter', (e) => {
-                            e.preventDefault();
-                            if (draggedEventId !== null) {
-                                handleHover(dateStr, m, draggedEventId ?? editingEventId);
-                            }
-                        });
-                        slot.addEventListener('dragover', (e) => {
-                            e.preventDefault();
-                        });
-                        slot.addEventListener('drop', (e) => {
-                            e.preventDefault();
-                            if (draggedEventId !== null) {
-                                handleDrop(dateStr, m, draggedEventId);
-                            }
-                        });
                     }
                     col.appendChild(slot);
                 }
@@ -1187,32 +1269,44 @@
                 hlContainer.id = `hl-${dateStr.replace(/\s/g, '')}`;
                 col.appendChild(hlContainer);
 
+                if (date.toDateString() === new Date().toDateString()) {
+                    const nowMarker = document.createElement('div');
+                    nowMarker.className = 'current-time-marker';
+                    nowMarker.dataset.date = dateStr;
+                    nowMarker.dataset.label = '';
+                    col.appendChild(nowMarker);
+                }
+
                 events.forEach(ev => {
-                    if (ev.dateStr === dateStr) {
-                        ev.segments.forEach((seg, idx) => {
-                            const el = document.createElement('div');
-                            el.className = `event ${ev.category}`;
-                            el.style.top = `${(seg.startMin - dayStartMin) * PX_PER_MIN + 2}px`;
-                            el.style.height = `${seg.duration * PX_PER_MIN - 4}px`;
+                    ev.segments.forEach((seg, segIndex) => {
+                        const segDate = seg.dateStr || ev.dateStr;
+                        if (segDate !== dateStr) return;
 
-                            let visualHours = (ev.totalMins / 60).toFixed(1);
-                            el.title = `${ev.title}\nCost: $${ev.cost}\nTime: ${visualHours} hours\nCategory: ${ev.category.toUpperCase()}`;
+                        const el = document.createElement('div');
+                        el.className = `event ${ev.category}`;
+                        el.style.top = `${(seg.startMin - dayStartMin) * PX_PER_MIN + 2}px`;
+                        el.style.height = `${seg.duration * PX_PER_MIN - 4}px`;
 
+                        let visualHours = (ev.totalMins / 60).toFixed(1);
+                        el.title = `${ev.title}\nCost: $${ev.cost}\nTime: ${visualHours} hours\nCategory: ${ev.category.toUpperCase()}`;
 
-                            if (!isPast) {
-                                el.addEventListener("mousedown", (e) => {
-                                    startEventDrag(e, ev);
-                                });
-                                el.addEventListener('dragend', (e) => {
-                                    e.stopPropagation();
-                                    draggedEventId = null;
-                                    el.classList.remove('dragging');
-                                    document.querySelectorAll('.highlight-valid').forEach(hl => hl.remove());
-                                });
-                            }
+                        const firstSegmentThisDay = ev.segments.findIndex((otherSeg) =>
+                            (otherSeg.dateStr || ev.dateStr) === dateStr
+                        ) === segIndex;
 
-                            if (idx === 0) {
-                                el.innerHTML = `
+                        if (!isPast) {
+                            el.addEventListener("mousedown", (e) => {
+                                startEventDrag(e, ev);
+                            });
+                            el.addEventListener('dragend', (e) => {
+                                e.stopPropagation();
+                                el.classList.remove('dragging');
+                                document.querySelectorAll('.highlight-valid').forEach(hl => hl.remove());
+                            });
+                        }
+
+                        if (firstSegmentThisDay) {
+                            el.innerHTML = `
                             <button class="event-edit-btn">✎</button>
 
                             <div class="event-content">
@@ -1220,34 +1314,36 @@
                                 <span>$${ev.cost} (${visualHours}h)</span>
                             </div>
                         `;
-                            } else {
-                                el.innerHTML = `
+                        } else {
+                            el.innerHTML = `
                             <button class="event-edit-btn">✎</button>
 
                             <div class="event-content">
                                 <b style="opacity:0.8">${ev.title} (Cont.)</b>
                             </div>
                         `;
-                            }
-                            const editBtn = el.querySelector('.event-edit-btn');
+                        }
+                        const editBtn = el.querySelector('.event-edit-btn');
+                        editBtn.type = 'button';
 
-                            editBtn.addEventListener('mousedown', (e) => {
-                                e.stopPropagation();
-                            });
-
-                            editBtn.addEventListener('click', (e) => {
-                                e.stopPropagation();
-                                openItemModal(ev.id);
-                            });
-                            col.appendChild(el);
+                        editBtn.addEventListener('mousedown', (e) => {
+                            e.stopPropagation();
                         });
-                    }
+
+                        editBtn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            openItemModal(Number(ev.id));
+                        });
+                        col.appendChild(el);
+                    });
                 });
 
                 calendar.appendChild(col);
             });
 
             updateStats(activeDates);
+            refreshCurrentTimeMarker();
 
             let weekEnd = new Date(activeDates[activeDates.length - 1]);
             document.getElementById('weekLabel').innerText = `${activeDates[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
@@ -1279,12 +1375,14 @@
 
             events = originalEvents;
 
-            const hlContainer = document.getElementById(`hl-${dateStr.replace(/\s/g, '')}`);
-
-            if (segments && hlContainer) {
+            if (segments) {
                 const dayStartMin = toMins(settings.startTime);
 
                 segments.forEach(seg => {
+                    const segDate = seg.dateStr || dateStr;
+                    const hlContainer = document.getElementById(`hl-${segDate.replace(/\s/g, '')}`);
+                    if (!hlContainer) return;
+
                     const hl = document.createElement('div');
                     hl.className = 'highlight-valid';
                     hl.style.position = 'absolute';
@@ -1322,18 +1420,20 @@
         }
 
         function handleDrop(dateStr, startMin, eventId) {
-            const evIndex = events.findIndex(e => e.id === Number(eventId));
+            const actualEventId = Number(eventId ?? dragState?.id);
+            if (Number.isNaN(actualEventId)) return;
+
+            const evIndex = events.findIndex(e => e.id === actualEventId);
             if (evIndex === -1) return;
 
             const ev = events[evIndex];
-            const segments = calculatePlacement(dateStr, startMin, ev.totalMins, Number(eventId));
+            const segments = calculatePlacement(dateStr, startMin, ev.totalMins, actualEventId);
 
             if (segments) {
                 ev.dateStr = dateStr;
                 ev.segments = segments;
                 saveData();
             }
-            draggedEventId = null;
             renderWeek();
         }
 
@@ -1360,15 +1460,53 @@
             const activeDateStrings = activeDates.map(d => d.toDateString());
 
             events.forEach(ev => {
-                if (activeDateStrings.includes(ev.dateStr)) {
-                    allocatedValue += ev.cost;
-                    allocatedMins += ev.totalMins;
-                }
+                ev.segments.forEach(seg => {
+                    const segDate = seg.dateStr || ev.dateStr;
+                    if (!activeDateStrings.includes(segDate)) return;
+                    allocatedMins += seg.duration;
+                    if (ev.totalMins > 0) {
+                        allocatedValue += (ev.cost * seg.duration) / ev.totalMins;
+                    }
+                });
             });
 
-            document.getElementById('stat-total').innerText = `$${capacityValue.toFixed(2)}`;
-            document.getElementById('stat-allocated').innerText = `$${allocatedValue.toFixed(2)}`;
-            document.getElementById('stat-hours').innerText = `${(allocatedMins / 60).toFixed(1)}h / ${totalWeeklyHours.toFixed(1)}h`;
+            let spentPurchase = 0;
+            let spentFood = 0;
+            let spentBills = 0;
+            let investedValue = 0;
+            let spentTransfers = 0;
+
+            events.forEach(ev => {
+                ev.segments.forEach(seg => {
+                    const segDate = seg.dateStr || ev.dateStr;
+                    if (!activeDateStrings.includes(segDate)) return;
+                    allocatedMins += seg.duration;
+                    if (ev.totalMins > 0) {
+                        const portion = (ev.cost * seg.duration) / ev.totalMins;
+                        if (ev.category === 'investing') {
+                            investedValue += portion;
+                        } else if (ev.category === 'purchase') {
+                            spentPurchase += portion;
+                        } else if (ev.category === 'food') {
+                            spentFood += portion;
+                        } else if (ev.category === 'bill') {
+                            spentBills += portion;
+                        } else if (ev.category === 'transfer') {
+                            spentTransfers += portion;
+                        }
+                        allocatedValue += portion;
+                    }
+                });
+            });
+
+            document.getElementById('stat-earned').innerText = `$${capacityValue.toFixed(2)}`;
+            document.getElementById('stat-spent').innerText = `$${(spentPurchase + spentFood + spentBills + spentTransfers).toFixed(2)}`;
+            document.getElementById('stat-invested').innerText = `$${investedValue.toFixed(2)}`;
+
+            document.getElementById('spent-purchase').innerText = `$${spentPurchase.toFixed(2)}`;
+            document.getElementById('spent-food').innerText = `$${spentFood.toFixed(2)}`;
+            document.getElementById('spent-bills').innerText = `$${spentBills.toFixed(2)}`;
+            document.getElementById('spent-transfers').innerText = `$${spentTransfers.toFixed(2)}`;
 
             calculateAndDisplayGlobalSavings();
         }
@@ -1376,22 +1514,39 @@
         function calculateAndDisplayGlobalSavings() {
             const now = new Date();
             const globalEarnings = calculateGlobalEarnings(now);
+            // Correct cash model: separate spending, investing (TFSA), and transfers
+            let spending = 0;
+            let investing = 0;
+            let transfers = 0;
 
-            let globalAllocatedCost = 0;
             events.forEach(ev => {
-                globalAllocatedCost += ev.cost;
+                if (ev.category === 'investing') {
+                    investing += ev.cost;
+                } else if (ev.category === 'transfer') {
+                    transfers += ev.cost;
+                } else {
+                    spending += ev.cost;
+                }
             });
 
-            const netSavings = globalEarnings - globalAllocatedCost;
+            // Net cash in bank = initial balance + earnings - spending - transfers
+            const netSavings = settings.initialBalance + globalEarnings - spending - transfers;
             document.getElementById('savings').innerText = `$${netSavings.toFixed(isRealTime ? 4 : 2)}`;
 
-            let percent = 100;
-            if (globalEarnings > 0) {
-                percent = Math.max(0, ((globalEarnings - globalAllocatedCost) / globalEarnings) * 100);
-            }
+            // TFSA / invested is not "lost" — label accordingly
+            const invested = investing;
+            document.getElementById('savings-invested').innerText = `TFSA: $${invested.toFixed(2)}`;
 
-            document.getElementById('savings-progress').style.width = `${percent}%`;
-            document.getElementById('savings-percent').innerText = `${percent.toFixed(1)}% of all-time income retained`;
+            // Percent breakdown relative to total available value (initial + earnings)
+            const totalValue = settings.initialBalance + globalEarnings;
+            const netLiquid = totalValue - spending - transfers;
+
+            const investedPercent = totalValue > 0 ? (invested / totalValue) * 100 : 0;
+            const savingsPercent = totalValue > 0 ? (netLiquid / totalValue) * 100 : 0;
+
+            document.getElementById('savings-progress').style.width = `${Math.max(0, savingsPercent)}%`;
+            document.getElementById('invested-progress').style.width = `${Math.max(0, investedPercent)}%`;
+            document.getElementById('savings-percent').innerText = `${(Math.max(0, savingsPercent + investedPercent)).toFixed(1)}% of total value retained`;
         }
 
         function calculateGlobalEarnings(now) {
@@ -1443,7 +1598,36 @@
             }
         }
 
-        window.onload = init;
+        function refreshCurrentTimeMarker() {
+            const now = new Date();
+            const todayStr = now.toDateString();
+            const currentMin = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+            const dayStart = toMins(settings.startTime);
+            const dayEnd = toMins(settings.endTime);
+
+            document.querySelectorAll('.current-time-marker').forEach(marker => {
+                if (marker.dataset.date !== todayStr || currentMin < dayStart || currentMin > dayEnd) {
+                    marker.style.display = 'none';
+                    return;
+                }
+
+                const top = (currentMin - dayStart) * PX_PER_MIN;
+                marker.style.display = 'block';
+                marker.style.top = `${top}px`;
+                marker.dataset.label = `${formatTime(Math.round(currentMin))} now`;
+            });
+        }
+
+        function startCurrentTimeTicker() {
+            if (currentTimeInterval) return;
+            refreshCurrentTimeMarker();
+            currentTimeInterval = setInterval(refreshCurrentTimeMarker, 30000);
+        }
+
+        window.onload = () => {
+            init();
+            startCurrentTimeTicker();
+        };
     </script>
     <script>
         /* =========================
@@ -1454,17 +1638,15 @@
         let dragPreview = null;
 
         function startEventDrag(e, ev) {
+            e.preventDefault();
             e.stopPropagation();
 
             dragState = {
-                id: ev.id,
-                event: structuredClone(ev),
-                offsetY: e.clientY,
+                id: Number(ev.id),
                 duration: ev.totalMins
             };
 
             const el = e.currentTarget;
-
             el.classList.add("dragging");
 
             createDragPreview(ev);
@@ -1478,10 +1660,12 @@
 
             dragPreview = document.createElement("div");
             dragPreview.className = `event ${ev.category}`;
-            dragPreview.style.opacity = "0.7";
+            dragPreview.style.opacity = "0.85";
             dragPreview.style.pointerEvents = "none";
             dragPreview.style.zIndex = "9999";
             dragPreview.style.position = "fixed";
+            dragPreview.style.width = "200px";
+            dragPreview.style.maxWidth = "calc(100vw - 40px)";
 
             dragPreview.innerHTML = `
         <b>${ev.title}</b>
@@ -1499,62 +1683,46 @@
         }
 
         function onDragMove(e) {
-            if (!dragState) return;
+            if (!dragState || !dragPreview) return;
 
             dragPreview.style.left = `${e.clientX + 12}px`;
             dragPreview.style.top = `${e.clientY + 12}px`;
 
             const element = document.elementFromPoint(e.clientX, e.clientY);
+            const dayCol = element?.closest(".day-col");
 
-            if (!element) return;
-
-            const dayCol = element.closest(".day-col");
-
-            if (!dayCol) return;
+            if (!dayCol) {
+                clearHighlights();
+                return;
+            }
 
             const rect = dayCol.getBoundingClientRect();
-
             const y = e.clientY - rect.top;
-
             const startMin = snapMinute(
                 toMins(settings.startTime) + Math.floor(y / PX_PER_MIN)
             );
 
-            const dateStr = dayCol.dataset.date;
-
-            renderDragPreview(dateStr, startMin);
+            renderDragPreview(dayCol.dataset.date, startMin);
         }
 
         function endEventDrag(e) {
             if (!dragState) return;
 
             const element = document.elementFromPoint(e.clientX, e.clientY);
+            const dayCol = element?.closest(".day-col");
 
-            if (element) {
-                const dayCol = element.closest(".day-col");
-
-                if (dayCol) {
-                    const rect = dayCol.getBoundingClientRect();
-
-                    const y = e.clientY - rect.top;
-
-                    const startMin = snapMinute(
-                        toMins(settings.startTime) + Math.floor(y / PX_PER_MIN)
-                    );
-
-                    const dateStr = dayCol.dataset.date;
-
-                    commitDrag(dateStr, startMin);
-                }
+            if (dayCol) {
+                const rect = dayCol.getBoundingClientRect();
+                const y = e.clientY - rect.top;
+                const startMin = snapMinute(
+                    toMins(settings.startTime) + Math.floor(y / PX_PER_MIN)
+                );
+                commitDrag(dayCol.dataset.date, startMin);
             }
 
-            document.querySelectorAll(".event.dragging")
-                .forEach(el => el.classList.remove("dragging"));
-
+            document.querySelectorAll(".event.dragging").forEach(el => el.classList.remove("dragging"));
             clearHighlights();
-
             removeDragPreview();
-
             dragState = null;
 
             document.removeEventListener("mousemove", onDragMove);
@@ -1567,6 +1735,7 @@
 
         function renderDragPreview(dateStr, startMin) {
             clearHighlights();
+            if (!dragState) return;
 
             const segments = calculatePlacement(
                 dateStr,
@@ -1577,28 +1746,20 @@
 
             if (!segments) return;
 
-            const container =
-                document.getElementById(`hl-${dateStr.replace(/\s/g, '')}`);
-
-            if (!container) return;
-
             const dayStart = toMins(settings.startTime);
 
             segments.forEach(seg => {
+                const segDate = seg.dateStr || dateStr;
+                const container = document.getElementById(`hl-${segDate.replace(/\s/g, '')}`);
+                if (!container) return;
+
                 const hl = document.createElement("div");
-
                 hl.className = "highlight-valid";
-
                 hl.style.position = "absolute";
                 hl.style.left = "4px";
                 hl.style.right = "4px";
-
-                hl.style.top =
-                    `${(seg.startMin - dayStart) * PX_PER_MIN + 2}px`;
-
-                hl.style.height =
-                    `${seg.duration * PX_PER_MIN - 4}px`;
-
+                hl.style.top = `${(seg.startMin - dayStart) * PX_PER_MIN + 2}px`;
+                hl.style.height = `${seg.duration * PX_PER_MIN - 4}px`;
                 hl.style.borderRadius = "8px";
 
                 container.appendChild(hl);
@@ -1606,15 +1767,11 @@
         }
 
         function clearHighlights() {
-            document
-                .querySelectorAll(".highlight-valid")
-                .forEach(el => el.remove());
+            document.querySelectorAll(".highlight-valid").forEach(el => el.remove());
         }
 
         function commitDrag(dateStr, startMin) {
-            const ev =
-                events.find(e => e.id === dragState.id);
-
+            const ev = events.find(e => e.id === dragState.id);
             if (!ev) return;
 
             const segments = calculatePlacement(
@@ -1628,9 +1785,7 @@
 
             ev.dateStr = dateStr;
             ev.segments = normalizeSegments(segments);
-
             saveData();
-
             renderWeek();
         }
 
@@ -1669,72 +1824,69 @@
             requiredMins,
             ignoreEventId = null
         ) {
-            const occupied = new Set();
-
             const ws = toMins(settings.startTime);
             const we = toMins(settings.endTime);
-
             const ls = toMins(settings.lunchStart);
             const le = toMins(settings.lunchEnd);
+            const ignoreId = ignoreEventId !== null ? Number(ignoreEventId) : null;
 
+            const occupiedMap = {};
             for (const ev of events) {
-                if (ev.id === ignoreEventId) continue;
-
-                if (ev.dateStr !== dateStr) continue;
-
+                if (ev.id === ignoreId) continue;
                 for (const seg of ev.segments) {
-                    for (
-                        let m = seg.startMin;
-                        m < seg.startMin + seg.duration;
-                        m++
-                    ) {
-                        occupied.add(m);
+                    const segDate = seg.dateStr || ev.dateStr;
+                    if (!occupiedMap[segDate]) occupiedMap[segDate] = new Set();
+                    for (let m = seg.startMin; m < seg.startMin + seg.duration; m++) {
+                        occupiedMap[segDate].add(m);
                     }
                 }
             }
 
             const segments = [];
-
-            let currentStart = null;
             let gathered = 0;
+            let currentSeg = null;
 
-            for (let m = startMin; m < we; m++) {
-                const blocked =
-                    occupied.has(m) ||
-                    (m >= ls && m < le);
+            let day = new Date(dateStr);
+            day.setHours(0, 0, 0, 0);
+            const startDay = new Date(day);
+            let daysChecked = 0;
+            const maxDays = 60;
 
-                if (!blocked) {
-                    if (currentStart === null) {
-                        currentStart = m;
+            while (gathered < requiredMins && daysChecked < maxDays) {
+                const dayKey = day.toDateString();
+                const dayOfWeek = day.getDay();
+                const isActiveDay = settings.enabledDays.includes(dayOfWeek);
+                const occupied = occupiedMap[dayKey] || new Set();
+
+                const dayStart = daysChecked === 0 ? Math.max(startMin, ws) : ws;
+
+                if (isActiveDay && dayStart < we) {
+                    for (let m = dayStart; m < we && gathered < requiredMins; m++) {
+                        const blocked = occupied.has(m) || (m >= ls && m < le);
+
+                        if (!blocked) {
+                            if (!currentSeg) {
+                                currentSeg = { dateStr: dayKey, startMin: m, duration: 0 };
+                                segments.push(currentSeg);
+                            }
+                            currentSeg.duration++;
+                            gathered++;
+                        } else {
+                            currentSeg = null;
+                        }
                     }
-
-                    gathered++;
                 } else {
-                    if (currentStart !== null) {
-                        segments.push({
-                            startMin: currentStart,
-                            duration: m - currentStart
-                        });
-
-                        currentStart = null;
-                    }
+                    currentSeg = null;
                 }
 
-                if (gathered >= requiredMins) {
-                    if (currentStart !== null) {
-                        segments.push({
-                            startMin: currentStart,
-                            duration:
-                                requiredMins -
-                                (gathered - (m - currentStart + 1))
-                        });
-                    }
-
-                    return normalizeSegments(segments);
-                }
+                if (gathered >= requiredMins) break;
+                day.setDate(day.getDate() + 1);
+                daysChecked++;
+                currentSeg = null;
             }
 
-            return null;
+            if (gathered < requiredMins) return null;
+            return normalizeSegments(segments);
         }
     </script>
 </body>
