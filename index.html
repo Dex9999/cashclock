@@ -389,7 +389,7 @@
             right: 0;
             height: 0;
             pointer-events: none;
-            z-index: 8;
+            z-index: 13;
         }
 
         .current-time-marker::before {
@@ -803,6 +803,8 @@
             <div class="form-group"><label>What are you saving for?</label><input id="itemTitle"
                     placeholder="e.g. Flight to Tokyo"></div>
             <div class="form-group"><label>Total Cost ($)</label><input type="number" id="itemCost" placeholder="0.00">
+                <button type="button" style="margin-top: 8px; padding: 0; background: none; border: none; color: var(--primary); cursor: pointer; font-weight: 600;" onclick="applyAutoCost()">⚡ Autofilled to next event</button>
+                <div id="autoCostHint" style="margin-top: 6px; font-size: 12px; color: var(--sub);"></div>
             </div>
             <div class="form-group">
                 <label>Category</label>
@@ -1022,6 +1024,17 @@
             document.addEventListener('keydown', e => { if (e.key === 'Escape' && placementItem) cancelPlacement(); });
             document.addEventListener('contextmenu', e => { if (placementItem) { e.preventDefault(); cancelPlacement(); } });
 
+            // Default to the week containing today when loading
+            const today = new Date();
+            const start = new Date(settings.startDate);
+            start.setHours(0,0,0,0);
+            const diffMs = today.setHours(0,0,0,0) - start.getTime();
+            if (diffMs <= 0) {
+                currentWeek = 0;
+            } else {
+                currentWeek = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
+            }
+
             renderWeek();
         }
 
@@ -1050,9 +1063,11 @@
             if (editingEventId === null) {
                 document.getElementById('itemTitle').value = '';
                 document.getElementById('itemCost').value = '';
+                document.getElementById('autoCostHint').innerText = '';
                 if (pendingPlacement) {
                     document.getElementById('modalTitle').innerText = "Direct Allocation";
                     document.getElementById('modalBtn').innerText = "Lock into Timeslot";
+                    applyAutoCost();
                 } else {
                     document.getElementById('modalTitle').innerText = "Allocate Hours";
                     document.getElementById('modalBtn').innerText = "Create & Place";
@@ -1070,6 +1085,61 @@
             pendingPlacement = null;
             editingEventId = null;
             document.getElementById('itemModal').classList.add('hidden');
+            document.getElementById('autoCostHint').innerText = '';
+        }
+
+        function getAvailableMinutesUntilNextEvent(dateStr, startMin) {
+            const dayStartMin = toMins(settings.startTime);
+            const dayEndMin = toMins(settings.endTime);
+            const lunchStartMin = toMins(settings.lunchStart);
+            const lunchEndMin = toMins(settings.lunchEnd);
+
+            const occupiedRanges = [];
+
+            events.forEach(ev => {
+                (ev.segments || []).forEach(seg => {
+                    const segDate = seg.dateStr || ev.dateStr;
+                    if (segDate !== dateStr) return;
+                    occupiedRanges.push([seg.startMin, seg.startMin + seg.duration]);
+                });
+            });
+
+            if (lunchStartMin >= dayStartMin && lunchEndMin <= dayEndMin) {
+                occupiedRanges.push([lunchStartMin, lunchEndMin]);
+            }
+
+            occupiedRanges.sort((a, b) => a[0] - b[0]);
+
+            let currentMin = Math.min(Math.max(startMin, dayStartMin), dayEndMin);
+
+            for (const [blockStart, blockEnd] of occupiedRanges) {
+                if (blockEnd <= currentMin) continue;
+                if (blockStart >= currentMin) {
+                    return Math.max(0, blockStart - currentMin);
+                }
+                currentMin = Math.max(currentMin, blockEnd);
+                if (currentMin >= dayEndMin) break;
+            }
+
+            return Math.max(0, dayEndMin - currentMin);
+        }
+
+        function applyAutoCost() {
+            if (!pendingPlacement) {
+                document.getElementById('autoCostHint').innerText = 'Choose a slot first to auto-fill the price.';
+                return;
+            }
+
+            const availableMins = getAvailableMinutesUntilNextEvent(pendingPlacement.dateStr, pendingPlacement.startMin);
+            if (availableMins <= 0) {
+                document.getElementById('autoCostHint').innerText = 'No free time remains before the next event or the end of the day.';
+                return;
+            }
+
+            const hours = availableMins / 60;
+            const suggestedCost = hours * settings.hourlyRate;
+            document.getElementById('itemCost').value = suggestedCost.toFixed(2);
+            document.getElementById('autoCostHint').innerText = `${hours.toFixed(1)}h available • Suggested $${suggestedCost.toFixed(2)}`;
         }
 
         function saveSettings() {
@@ -1604,6 +1674,8 @@
             const currentMin = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
             const dayStart = toMins(settings.startTime);
             const dayEnd = toMins(settings.endTime);
+    const lunchStart = toMins(settings.lunchStart);
+    const lunchEnd = toMins(settings.lunchEnd);
 
             document.querySelectorAll('.current-time-marker').forEach(marker => {
                 if (marker.dataset.date !== todayStr || currentMin < dayStart || currentMin > dayEnd) {
@@ -1614,7 +1686,40 @@
                 const top = (currentMin - dayStart) * PX_PER_MIN;
                 marker.style.display = 'block';
                 marker.style.top = `${top}px`;
-                marker.dataset.label = `${formatTime(Math.round(currentMin))} now`;
+                
+                // Check if current time is within any event and calculate percentage
+                let label = `${formatTime(Math.round(currentMin))} now`;
+                for (const ev of events) {
+                    for (const seg of ev.segments) {
+                        const segDate = seg.dateStr || ev.dateStr;
+                        if (segDate === todayStr && currentMin >= seg.startMin && currentMin < seg.startMin + seg.duration) {
+                               // Calculate total duration of all segments for this event
+                               let totalDuration = 0;
+                               let elapsedTime = 0;
+               
+                               for (const s of ev.segments) {
+                                   const sDate = s.dateStr || ev.dateStr;
+                                   if (sDate === todayStr) {
+                                       totalDuration += s.duration;
+                                       // Add elapsed time from this segment
+                                       if (s === seg) {
+                                           elapsedTime += currentMin - s.startMin;
+                                       } else if (s.startMin < currentMin) {
+                                           elapsedTime += s.duration;
+                                       }
+                                   }
+                               }
+               
+                               if (totalDuration > 0) {
+                                   const percentThrough = Math.round((elapsedTime / totalDuration) * 100);
+                                   label += ` (${percentThrough}%)`;
+                               }
+                               break;
+                        }
+                    }
+                }
+                
+                marker.dataset.label = label;
             });
         }
 
